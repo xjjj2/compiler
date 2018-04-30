@@ -159,6 +159,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	
 	@Override
 	public defined Visit(Arraynode node) throws SemeticError {
+		if (node.name.getClass().equals(Newnode.class)) throw new SemeticError();
 		ArrayorType type=(ArrayorType) Visit(node.name);
 		node.iflhs=true;
 		node.type=new ArrayorType(type.type,type.arraynum-1);
