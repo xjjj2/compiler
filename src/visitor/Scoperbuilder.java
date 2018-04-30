@@ -554,7 +554,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		node.scope=scoper.peek();
 		node.iflhs=false;
 		ArrayorType type=(ArrayorType) Visit(node.getexpr());
-		if (!node.getexpr().iflhs) throw new SemeticError();
+		if (!node.getexpr().iflhs && !node.prefix().equals("!") &&!node.prefix().equals("+")&&!node.prefix().equals("-")) throw new SemeticError();
 		node.type=type;
 		if (!ifint(type) && !(ifbool(type) && node.prefix().equals("!"))) 
 			throw new SemeticError();
