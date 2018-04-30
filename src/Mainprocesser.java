@@ -26,7 +26,7 @@ public class Mainprocesser {
         return ans;
     }*/
     public static void main(String[] args) throws SemeticError, IOException {
-    	boolean test=true;
+    	boolean test=false;
     	String name;
     	if (test) name="F:\\eclipse-workspace\\compiler\\src\\example.txt";
     	else name="program.txt";
