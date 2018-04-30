@@ -14,7 +14,7 @@ public class Mainprocesser {
 	static Map<String,Function> topfuncs;
 	static TopScope top;
     public static void main(String[] args) throws SemeticError, IOException {
-        InputStream is = new FileInputStream("F:\\eclipse-workspace\\compiler\\src\\example.txt"); // or System.in;
+        InputStream is = System.in;
         ANTLRInputStream input = new ANTLRInputStream(is);
         mlperLexer lexer = new mlperLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
