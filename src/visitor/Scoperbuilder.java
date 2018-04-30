@@ -316,6 +316,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	public defined Visit(constructordecnode node) throws SemeticError {
 		node.scope=scoper.peek();
 		nowFunc=node.type.constructor;
+		nowFunc.definenode=node;
 		Visit(node.block);
 		nowFunc=null;
 		return null;
@@ -496,6 +497,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		node.scope=scoper.peek();
 		node.scope.method.put(node.name, node.func);
 		nowFunc=node.func;
+		nowFunc.definenode=node;
 		push();
 		Visit(node.attribute);
 		Visit(node.body);
@@ -570,12 +572,13 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	@Override
 	public defined Visit(Returnnode node) throws SemeticError {
 		node.scope=scoper.peek();
+		if (node.expr!=null && nowFunc.definenode.getClass().equals(constructordecnode.class)) throw new SemeticError();
 		if (node.expr!=null) {
 			ArrayorType type=(ArrayorType) Visit(node.expr);
 			if (!assignable(nowFunc.returnval,type)) throw new SemeticError();
 		}
 		else {
-			if(!nowFunc.ifvoid) {
+			if(!nowFunc.ifvoid && !nowFunc.definenode.getClass().equals(constructordecnode.class)) {
 				throw new SemeticError();
 			}
 		}
