@@ -21,12 +21,10 @@ abstract class ASTBaseVisitor<T> {
 	public abstract T Visit(constructordecnode node) throws SemeticError;
 	public abstract T Visit(Continuenode node);
 	public abstract T Visit(creatednamenode node) throws SemeticError;
-	public abstract T Visit(createdrestnode node);
 	public abstract T Visit(creatornode node) throws SemeticError;
 	public abstract T Visit(EmptyBlocknode node);
 	public abstract T Visit(EmptyClassdecnode node);
 	public abstract T Visit(exprlistnode node) throws SemeticError;
-	public abstract T Visit(Exprnode node);
 //	public abstract T Visit(Exprthisnode node);
 	public abstract T Visit(Fielddecnode node) throws SemeticError;
 	public abstract T Visit(forcontrolnode node) throws SemeticError;
@@ -39,9 +37,6 @@ abstract class ASTBaseVisitor<T> {
 //	public abstract T Visit(Identstringnode node);
 	public abstract T Visit(Ifnode node) throws SemeticError;
 	public abstract T Visit(Intliteralnode node);
-	public abstract T Visit(Intnode node);
-	public abstract T Visit(LHSnode node);
-	public abstract T Visit(Literalnode node);
 	public abstract T Visit(Localvaridecnode node) throws SemeticError;
 	public abstract T Visit(Membernode node) throws SemeticError;
 	public abstract T Visit(methoddec node) throws SemeticError;
@@ -55,7 +50,6 @@ abstract class ASTBaseVisitor<T> {
 	public abstract T Visit(Seminode node);
 	public abstract T Visit(SourcePosition node);
 	public abstract T Visit(Stateexprnode node) throws SemeticError;
-	public abstract T Visit(Statementnode node);
 	public abstract T Visit(Stringliteralnode node);
 	public abstract T Visit(Thisexprnode node) throws SemeticError;
 	public abstract T Visit(Thisnode node) throws SemeticError;
@@ -85,12 +79,11 @@ abstract class ASTBaseVisitor<T> {
 	   else if (nodename.getClass().equals(constructordecnode.class)) return Visit((constructordecnode)nodename);
 	   else if (nodename.getClass().equals(Continuenode.class)) return Visit((Continuenode)nodename);
 	   else if (nodename.getClass().equals(creatednamenode.class)) return Visit((creatednamenode)nodename);
-	   else if (nodename.getClass().equals(createdrestnode.class)) return Visit((createdrestnode)nodename);
 	   else if (nodename.getClass().equals(creatornode.class)) return Visit((creatornode)nodename);
 	   else if (nodename.getClass().equals(EmptyBlocknode.class)) return Visit((EmptyBlocknode)nodename);
 	   else if (nodename.getClass().equals(EmptyClassdecnode.class)) return Visit((EmptyClassdecnode)nodename);
 	   else if (nodename.getClass().equals(exprlistnode.class)) return Visit((exprlistnode)nodename);
-	   else if (nodename.getClass().equals(Exprnode.class)) return Visit((Exprnode)nodename);
+//	   else if (nodename.getClass().equals(Exprnode.class)) return Visit((Exprnode)nodename);
 //	   else if (nodename.getClass().equals(Exprthisnode.class)) return Visit((Exprthisnode)nodename);
 	   else if (nodename.getClass().equals(Fielddecnode.class)) return Visit((Fielddecnode)nodename);
 	   else if (nodename.getClass().equals(forcontrolnode.class)) return Visit((forcontrolnode)nodename);
@@ -104,7 +97,7 @@ abstract class ASTBaseVisitor<T> {
 	   else if (nodename.getClass().equals(Ifnode.class)) return Visit((Ifnode)nodename);
 	   else if (nodename.getClass().equals(Intliteralnode.class)) return Visit((Intliteralnode)nodename);
 	   else if (nodename.getClass().equals(Intnode.class)) return Visit((Intnode)nodename);
-	   else if (nodename.getClass().equals(LHSnode.class)) return Visit((LHSnode)nodename);
+//	   else if (nodename.getClass().equals(LHSnode.class)) return Visit((LHSnode)nodename);
 	   else if (nodename.getClass().equals(Literalnode.class)) return Visit((Literalnode)nodename);
 	   else if (nodename.getClass().equals(Localvaridecnode.class)) return Visit((Localvaridecnode)nodename);
 	   else if (nodename.getClass().equals(Membernode.class)) return Visit((Membernode)nodename);
@@ -118,7 +111,7 @@ abstract class ASTBaseVisitor<T> {
 	   else if (nodename.getClass().equals(Returnnode.class)) return Visit((Returnnode)nodename);
 	   else if (nodename.getClass().equals(Seminode.class)) return Visit((Seminode)nodename);
 	   else if (nodename.getClass().equals(Stateexprnode.class)) return Visit((Stateexprnode)nodename);
-	   else if (nodename.getClass().equals(Statementnode.class)) return Visit((Statementnode)nodename);
+//	   else if (nodename.getClass().equals(Statementnode.class)) return Visit((Statementnode)nodename);
 	   else if (nodename.getClass().equals(Stringliteralnode.class)) return Visit((Stringliteralnode)nodename);
 	   else if (nodename.getClass().equals(Thisexprnode.class)) return Visit((Thisexprnode)nodename);
 	   else if (nodename.getClass().equals(Thisnode.class)) return Visit((Thisnode)nodename);

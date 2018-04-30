@@ -1,5 +1,6 @@
 package visitor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import compilerNode.*;
 import visitor.mlperParser.ArrayContext;
@@ -200,8 +201,8 @@ public class ASTconverter extends mlperBaseVisitor<node> {
 	@Override
 	public Typenode visitTypeType(TypeTypeContext ctx) {
 		Typenode a=new Typenode();
-		if (ctx.LBRACE()!=null)
-			a.type.arraynum=ctx.LBRACE().size();
+		if (ctx.LBRACK()!=null)
+			a.type.arraynum=ctx.LBRACK().size();
 		else a.type.arraynum=0;
 		if (ctx.classOrInterfaceType()!=null) {
 			Classnamenode name=(Classnamenode) visit(ctx.classOrInterfaceType());
@@ -345,7 +346,11 @@ public class ASTconverter extends mlperBaseVisitor<node> {
 			a.exprlist.parent=a;
 			a.exprnum=a.exprlist.child.size();
 		}
-		else {a.exprnum=0;}
+		else {
+			a.exprnum=0;
+			a.exprlist=new exprlistnode();
+			a.exprlist.child=Collections.emptyList();
+		}
 		return a;
 	}
 
@@ -543,8 +548,8 @@ public class ASTconverter extends mlperBaseVisitor<node> {
 	public arraycreatenode visitArrayCreatorRest(ArrayCreatorRestContext ctx) {
 		arraycreatenode a=new arraycreatenode();
 		List<Exprnode> exprs=new ArrayList<Exprnode>();
-		if (ctx.LBRACE()!=null)
-		a.num=ctx.expression().size()+ctx.LBRACE().size();
+		if (ctx.LBRACK()!=null)
+		a.num=ctx.LBRACK().size();
 		else a.num=ctx.expression().size();
 		for (int i=0;i<ctx.expression().size();++i) {
 			exprs.add((Exprnode) visit(ctx.expression(i)));
@@ -672,6 +677,7 @@ public class ASTconverter extends mlperBaseVisitor<node> {
 			b.add((Vardeclaratornode) visit(ctx.variableDeclarator(i)));
 			b.get(i).parent=a;
 		}
+		a.vardecs=b;
 		return a;
 	}
 
@@ -692,7 +698,10 @@ public class ASTconverter extends mlperBaseVisitor<node> {
 			a.paras=(formalparalistnode) visit(ctx.formalParameterList());
 			a.paras.parent=a;
 		}
-		else a.paras=null;
+		else {
+			a.paras=new formalparalistnode();
+			a.paras.para=Collections.emptyList();
+		}
 		return a;
 	}
 

@@ -115,16 +115,16 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		scoper.pop();
 	}
 	public boolean ifint(ArrayorType type) {
-		return (type.arraynum==0 && type.type.name=="int");
+		return (type.arraynum==0 && type.type.name.equals("int"));
 	}
 	public boolean ifbool(ArrayorType type) {
-		return (type.arraynum==0 && type.type.name=="bool");
+		return (type.arraynum==0 && type.type.name.equals("bool"));
 	}
 	public boolean ifstring(ArrayorType type) {
-		return (type.arraynum==0 && type.type.name=="string");
+		return (type.arraynum==0 && type.type.name.equals("string"));
 	}
 	public boolean ifnull(ArrayorType type) {
-		return (type.type.name=="null");
+		return (type.type.name.equals("null"));
 	}
 	public boolean ifsametype(ArrayorType type1,ArrayorType type2) {
 		return (type1.type==type2.type && type1.arraynum==type2.arraynum);
@@ -148,8 +148,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	public defined Visit(Arraynode node) throws SemeticError {
 		ArrayorType type=(ArrayorType) Visit(node.name);
 		node.iflhs=true;
-		node.type.type=type.type;
-		node.type.arraynum=type.arraynum-1;
+		node.type=new ArrayorType(type.type,type.arraynum-1);
 		node.scope=scoper.peek();
 		if (node.type.arraynum<0) throw new SemeticError("array too long");
 		ArrayorType type2=(ArrayorType)Visit(node.sub);
@@ -196,7 +195,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 			node.type=type1;
 		}
 		else if(node.opcode.equals("+")) {
-			if (!ifint(type1) || !ifint(type2) && !ifstring(type1) || !ifstring(type2)) 
+			if ((!ifint(type1) || !ifint(type2)) && (!ifstring(type1) || !ifstring(type2))) 
 				throw new SemeticError();
 			node.type=type1;
 		}
@@ -206,7 +205,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 				node.opcode.equals(">")||
 				node.opcode.equals("==")||
 				node.opcode.equals("!=")) {
-			if (!ifint(type1) || !ifint(type2) && !ifstring(type1) || !ifstring(type2)) 
+			if ((!ifint(type1) || !ifint(type2)) && (!ifstring(type1) || !ifstring(type2))) 
 				throw new SemeticError();
 			node.type=abool;
 		}
@@ -311,14 +310,11 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		return node.type;
 	}
 	@Override
-	public defined Visit(createdrestnode node) {
-		return null;
-	}
-	@Override
 	public defined Visit(creatornode node) throws SemeticError {
 		node.scope=scoper.peek();
 		definedtype typename=(definedtype) Visit(node.name);
 		ArrayorType typelong=(ArrayorType) Visit(node.createrest);
+		if (typelong==null) typelong=new ArrayorType();
 		return new ArrayorType(typename,typelong.arraynum);
 	}
 	@Override
@@ -332,10 +328,6 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	@Override
 	public defined Visit(exprlistnode node) throws SemeticError{
 		for (Exprnode i:node.child) Visit(i);
-		return null;
-	}
-	@Override
-	public defined Visit(Exprnode node) {
 		return null;
 	}
 	@Override
@@ -435,18 +427,6 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		return aint;
 	}
 	@Override
-	public defined Visit(Intnode node) {
-		return null;
-	}
-	@Override
-	public defined Visit(LHSnode node) {
-		return null;
-	}
-	@Override
-	public defined Visit(Literalnode node) {
-		return null;
-	}
-	@Override
 	public defined Visit(Localvaridecnode node) throws SemeticError {
 		node.scope=scoper.peek();
 		Scope sp=node.scope;
@@ -489,18 +469,25 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	@Override
 	public defined Visit(Methodnode node) throws SemeticError {
 		node.scope=scoper.peek();
-		ArrayorType type=(ArrayorType) Visit(node.expr);
-		if (type.arraynum>0) throw new SemeticError("array has no method");
 		node.iflhs=false;
+		ArrayorType type=(ArrayorType) Visit(node.expr);
 		Funcallnode id=node.method;
-		Function get=type.type.method.get(id.func.name);
-		if (get==null) throw new SemeticError("no such method");
-		if (get.attribute.size()!=id.exprlist.child.size()) throw new SemeticError("no such method");
-		for (int i=0;i<get.attribute.size();++i) {
-			if (!ifsametype(get.attribute.get(i).type,(ArrayorType) Visit(id.exprlist.child.get(i))))
-				throw new SemeticError("no such method");
+		if (type.arraynum>0) { 
+			if (!id.name.equals("size")||!(id.exprlist.child.size()==0))
+			throw new SemeticError("array has no method");
+			else node.type=aint;
 		}
-		node.type=get.returnval;
+		else {
+			Function get=type.type.method.get(id.name);
+			if (get==null) throw new SemeticError("no such method");
+			if (get.attribute.size()!=id.exprlist.child.size()) throw new SemeticError("no such method");
+			for (int i=0;i<get.attribute.size();++i) {
+				if (!ifsametype(get.attribute.get(i).type,(ArrayorType) Visit(id.exprlist.child.get(i))))
+					throw new SemeticError("no such method");
+			}
+			id.func=get;
+			node.type=get.returnval;
+		}
 		return node.type;
 	}
 	@Override
@@ -565,10 +552,6 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	@Override
 	public defined Visit(Stateexprnode node)throws SemeticError {
 		Visit(node.getExpr());
-		return null;
-	}
-	@Override
-	public defined Visit(Statementnode node) {
 		return null;
 	}
 	@Override

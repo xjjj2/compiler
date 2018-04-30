@@ -268,12 +268,6 @@ public class Classmaker extends ASTBaseVisitor<defined>{
 	}
 
 	@Override
-	public defined Visit(createdrestnode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public defined Visit(creatornode node) {
 		// TODO Auto-generated method stub
 		return null;
@@ -297,11 +291,6 @@ public class Classmaker extends ASTBaseVisitor<defined>{
 		return null;
 	}
 
-	@Override
-	public defined Visit(Exprnode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 
 	@Override
@@ -370,23 +359,7 @@ public class Classmaker extends ASTBaseVisitor<defined>{
 		return null;
 	}
 
-	@Override
-	public defined Visit(Intnode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	@Override
-	public defined Visit(LHSnode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public defined Visit(Literalnode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public defined Visit(Localvaridecnode node) {
@@ -479,12 +452,6 @@ public class Classmaker extends ASTBaseVisitor<defined>{
 
 	@Override
 	public defined Visit(Stateexprnode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public defined Visit(Statementnode node) {
 		// TODO Auto-generated method stub
 		return null;
 	}

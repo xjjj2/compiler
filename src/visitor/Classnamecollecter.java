@@ -199,11 +199,6 @@ public class Classnamecollecter extends ASTBaseVisitor<String> {
 		return null;
 	}
 
-	@Override
-	public String Visit(createdrestnode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public String Visit(creatornode node) {
@@ -229,11 +224,6 @@ public class Classnamecollecter extends ASTBaseVisitor<String> {
 		return null;
 	}
 
-	@Override
-	public String Visit(Exprnode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public String Visit(Fielddecnode node) {
@@ -291,24 +281,6 @@ public class Classnamecollecter extends ASTBaseVisitor<String> {
 
 	@Override
 	public String Visit(Intliteralnode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String Visit(Intnode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String Visit(LHSnode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String Visit(Literalnode node) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -394,11 +366,6 @@ public class Classnamecollecter extends ASTBaseVisitor<String> {
 		return null;
 	}
 
-	@Override
-	public String Visit(Statementnode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public String Visit(Stringliteralnode node) {

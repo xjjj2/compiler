@@ -1,4 +1,5 @@
-package visitor;// Generated from mlper.g4 by ANTLR 4.7.1
+// Generated from mlper.g4 by ANTLR 4.7.1
+package visitor;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**

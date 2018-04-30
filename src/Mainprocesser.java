@@ -55,7 +55,7 @@ public class Mainprocesser {
     public static void setprimitivetype() {
     	 classtype.put("int",new definedtype("int",null));
          classtype.put("bool",new definedtype("bool",null));
-         classtype.put("bool",new definedtype("string",null));
+         classtype.put("string",new definedtype("string",null));
          classtype.put("null", new definedtype("null",null));
          Function length;
          Function substring;
