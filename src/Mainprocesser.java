@@ -13,22 +13,9 @@ public class Mainprocesser {
 	static Map<String,definedtype> classtype;
 	static Map<String,Function> topfuncs;
 	static TopScope top;
-    private static String readTestFile(String filePath) throws IOException {
-        String ans = new String();
-        File file = new File(filePath);
-        BufferedReader reader = null;
-        reader = new BufferedReader(new FileReader(file));
-        String tempString = null;
-        while ((tempString = reader.readLine()) != null) {
-           ans += tempString + '\n';
-        }
-        reader.close();
-        return ans;
-    }
     public static void main(String[] args) throws SemeticError, IOException {
-        /*InputStream is = new FileInputStream("F:\\eclipse-workspace\\compiler\\src\\example.txt"); // or System.in;
-        ANTLRInputStream input = new ANTLRInputStream(is);*/
-    	CharStream input=CharStreams.fromString(readTestFile("program.txt"));
+        InputStream is = new FileInputStream("program.txt"); // or System.in;
+        ANTLRInputStream input = new ANTLRInputStream(is);
         mlperLexer lexer = new mlperLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         mlperParser parser = new mlperParser(tokens);
