@@ -11,7 +11,7 @@ abstract class ASTBaseVisitor<T> {
 	public abstract T Visit(Blockstatenode node) throws SemeticError;
 	public abstract T Visit(Boolliteralnode node);
 	public abstract T Visit(Boolnode node);
-	public abstract T Visit(Breaknode node);
+	public abstract T Visit(Breaknode node) throws SemeticError;
 	public abstract T Visit(Charliteralnode node);
 	public abstract T Visit(Classbodydec node) throws SemeticError;
 	public abstract T Visit(Classbodynode node) throws SemeticError;

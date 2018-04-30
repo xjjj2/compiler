@@ -82,7 +82,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	public ArrayorType aint;
 	public ArrayorType abool;
 	public ArrayorType astring;
-	public Fornode nowFor;
+	public Statementnode nowLoop;
 	public Variable SearchforVar(Scope sp,String id) throws SemeticError {
 		if (sp.parent!=null) {
 			if (!sp.variable.containsKey(id)) {
@@ -259,8 +259,9 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		return null;
 	}
 	@Override
-	public defined Visit(Breaknode node) {
+	public defined Visit(Breaknode node) throws SemeticError {
 		node.scope=scoper.peek();
+		if (nowLoop==null) throw new SemeticError("nothing to continue");
 		return null;
 	}
 	@Override
@@ -318,7 +319,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	}
 	@Override
 	public defined Visit(Continuenode node) throws SemeticError {
-		if (nowFor==null) throw new SemeticError("nothing to continue");
+		if (nowLoop==null) throw new SemeticError("nothing to continue");
 		return null;
 	}
 	@Override
@@ -400,11 +401,11 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	@Override
 	public defined Visit(Fornode node) throws SemeticError {
 		node.scope=scoper.peek();
-		nowFor=node;
+		nowLoop=node;
 		push();
 		Visit(node.con);
 		pop();
-		nowFor=null;
+		nowLoop=null;
 		return null;
 	}
 	@Override
@@ -637,9 +638,11 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	@Override
 	public defined Visit(Whilenode node) throws SemeticError {
 		node.scope=scoper.peek();
+		nowLoop=node;
 		ArrayorType type=(ArrayorType) Visit(node.parexpr);
 		Visit(node.statement);
 		if (!ifbool(type)) throw new SemeticError();
+		nowLoop=null;
 		return null;
 	}
 	
