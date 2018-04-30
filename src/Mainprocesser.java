@@ -14,7 +14,7 @@ public class Mainprocesser {
 	static Map<String,Function> topfuncs;
 	static TopScope top;
     public static void main(String[] args) throws SemeticError, IOException {
-        InputStream is =  new FileInputStream(args[0]);
+        InputStream is =  new FileInputStream("program.txt");
         ANTLRInputStream input = new ANTLRInputStream(is);
         mlperLexer lexer = new mlperLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
