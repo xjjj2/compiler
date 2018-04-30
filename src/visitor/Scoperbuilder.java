@@ -263,7 +263,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	@Override
 	public defined Visit(Breaknode node) throws SemeticError {
 		node.scope=scoper.peek();
-		if (nowLoop.size()==0) throw new SemeticError("nothing to break");
+		if (nowLoop.size()==0) throw new SemeticError("nothing to breaka");
 		node.Loop=nowLoop.peek();
 		return null;
 	}
@@ -544,6 +544,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		node.scope=scoper.peek();
 		node.iflhs=false;
 		ArrayorType type=(ArrayorType) Visit(node.getexpr());
+		if (!node.getexpr().iflhs) throw new SemeticError();
 		node.type=type;
 		if (!ifint(type)) throw new SemeticError();
 		return type;
@@ -553,8 +554,10 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		node.scope=scoper.peek();
 		node.iflhs=false;
 		ArrayorType type=(ArrayorType) Visit(node.getexpr());
+		if (!node.getexpr().iflhs) throw new SemeticError();
 		node.type=type;
-		if (!ifint(type)) throw new SemeticError();
+		if (!ifint(type) && !(ifbool(type) && node.prefix().equals("!"))) 
+			throw new SemeticError();
 		return type;
 	}
 	@Override
