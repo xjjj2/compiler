@@ -1,6 +1,7 @@
 package compilerNode;
 
 public class Breaknode extends Statementnode {
+	public Statementnode Loop;
 /*	protected IdentifierNode id;
 
 	public Breaknode(IdentifierNode id) {

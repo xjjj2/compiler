@@ -1,6 +1,7 @@
 package compilerNode;
 
 public class Continuenode extends Statementnode {
+	public Statementnode Loop;
 /*	protected IdentifierNode id;
 
 	public IdentifierNode getId() {

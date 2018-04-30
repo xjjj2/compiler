@@ -1,5 +1,6 @@
 package visitor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -82,7 +83,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	public ArrayorType aint;
 	public ArrayorType abool;
 	public ArrayorType astring;
-	public Statementnode nowLoop;
+	public Stack<Statementnode> nowLoop;
 	public Variable SearchforVar(Scope sp,String id) throws SemeticError {
 		if (sp.parent!=null) {
 			if (!sp.variable.containsKey(id)) {
@@ -115,6 +116,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		astring=new ArrayorType("string",null,classtype.get("string"),0);
 		nowClass=null;
 		nowFunc=null;
+		nowLoop=new Stack<>();
 	}
 	public void push() {
 		localScope local=new localScope();
@@ -261,7 +263,8 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	@Override
 	public defined Visit(Breaknode node) throws SemeticError {
 		node.scope=scoper.peek();
-		if (nowLoop==null) throw new SemeticError("nothing to continue");
+		if (nowLoop.size()==0) throw new SemeticError("nothing to break");
+		node.Loop=nowLoop.peek();
 		return null;
 	}
 	@Override
@@ -319,7 +322,9 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	}
 	@Override
 	public defined Visit(Continuenode node) throws SemeticError {
-		if (nowLoop==null) throw new SemeticError("nothing to continue");
+		node.scope=scoper.peek();
+		if (nowLoop.size()==0) throw new SemeticError("nothing to continue");
+		node.Loop=nowLoop.peek();
 		return null;
 	}
 	@Override
@@ -401,11 +406,11 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	@Override
 	public defined Visit(Fornode node) throws SemeticError {
 		node.scope=scoper.peek();
-		nowLoop=node;
+		nowLoop.push(node);
 		push();
 		Visit(node.con);
 		pop();
-		nowLoop=null;
+		nowLoop.pop();
 		return null;
 	}
 	@Override
@@ -638,11 +643,11 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	@Override
 	public defined Visit(Whilenode node) throws SemeticError {
 		node.scope=scoper.peek();
-		nowLoop=node;
+		nowLoop.push(node);
 		ArrayorType type=(ArrayorType) Visit(node.parexpr);
 		Visit(node.statement);
 		if (!ifbool(type)) throw new SemeticError();
-		nowLoop=null;
+		nowLoop.pop();
 		return null;
 	}
 	
