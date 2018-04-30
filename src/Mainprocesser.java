@@ -13,8 +13,24 @@ public class Mainprocesser {
 	static Map<String,definedtype> classtype;
 	static Map<String,Function> topfuncs;
 	static TopScope top;
+/*	private static String readTestFile(String filePath) throws IOException {
+        String ans = new String();
+        File file = new File(filePath);
+        BufferedReader reader = null;
+        reader = new BufferedReader(new FileReader(file));
+        String tempString = null;
+        while ((tempString = reader.readLine()) != null) {
+           ans += tempString + '\n';
+        }
+        reader.close();
+        return ans;
+    }*/
     public static void main(String[] args) throws SemeticError, IOException {
-        InputStream is = new FileInputStream("program.txt"); // or System.in;
+    	boolean test=true;
+    	String name;
+    	if (test) name="F:\\eclipse-workspace\\compiler\\src\\example.txt";
+    	else name="program.txt";
+        InputStream is = new FileInputStream(name); // or System.in;
         ANTLRInputStream input = new ANTLRInputStream(is);
         mlperLexer lexer = new mlperLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -39,6 +55,11 @@ public class Mainprocesser {
         }
         Classmaker cmaker=new Classmaker(classtype,topfuncs);
         cmaker.Visit(ast);
+        if (!topfuncs.containsKey("main")) throw new SemeticError("no main");
+        else {
+        	ArrayorType maintype=topfuncs.get("main").returnval;
+        	if(!maintype.name.equals("int") || maintype.arraynum>0) throw new SemeticError("not int main");
+        }
         top=new TopScope();
         top.topfuncs=topfuncs;
         top.method=topfuncs;

@@ -19,7 +19,7 @@ abstract class ASTBaseVisitor<T> {
 	public abstract T Visit(Classdecnode node) throws SemeticError;
 	public abstract T Visit(Classnamenode node);
 	public abstract T Visit(constructordecnode node) throws SemeticError;
-	public abstract T Visit(Continuenode node);
+	public abstract T Visit(Continuenode node) throws SemeticError;
 	public abstract T Visit(creatednamenode node) throws SemeticError;
 	public abstract T Visit(creatornode node) throws SemeticError;
 	public abstract T Visit(EmptyBlocknode node);

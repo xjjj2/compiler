@@ -227,6 +227,7 @@ public class Classmaker extends ASTBaseVisitor<defined>{
 				if (builder.consetted) throw new SemeticError("2 Constructors");
 				builder.consetted=true;
 				Function cons=builder.constructor;
+				consnode.type=builder;
 				cons.setDefinenode(consnode);
 			}
 			else if(dec.member.getClass().equals(methoddec.class)) {

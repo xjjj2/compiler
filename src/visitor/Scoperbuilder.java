@@ -82,13 +82,24 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	public ArrayorType aint;
 	public ArrayorType abool;
 	public ArrayorType astring;
-	public Variable SearchforVar(Scope sp,String id) {
+	public Fornode nowFor;
+	public Variable SearchforVar(Scope sp,String id) throws SemeticError {
 		if (sp.parent!=null) {
-			if (!sp.variable.containsKey(id)) return SearchforVar(sp.parent,id);
+			if (!sp.variable.containsKey(id)) {
+				if (!sp.method.containsKey(id)){
+					return SearchforVar(sp.parent,id);
+				}
+				else throw new SemeticError();
+			}
 			else return sp.variable.get(id);
 		}
 		else {
-			if (!sp.variable.containsKey(id)) return null;
+			if (!sp.variable.containsKey(id)) {
+				if (!sp.method.containsKey(id)){
+					return null;
+				}
+				else throw new SemeticError();
+			}
 			else return sp.variable.get(id);
 		}
 	}
@@ -202,10 +213,15 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		else if(node.opcode.equals("<=")||
 				node.opcode.equals(">=")||
 				node.opcode.equals("<")||
-				node.opcode.equals(">")||
-				node.opcode.equals("==")||
-				node.opcode.equals("!=")) {
+				node.opcode.equals(">"))
+				{
 			if ((!ifint(type1) || !ifint(type2)) && (!ifstring(type1) || !ifstring(type2))) 
+				throw new SemeticError();
+			node.type=abool;
+		}
+		else if(node.opcode.equals("==")||
+				node.opcode.equals("!=")) {
+			if (!assignable(type1,type2))
 				throw new SemeticError();
 			node.type=abool;
 		}
@@ -295,11 +311,14 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	@Override
 	public defined Visit(constructordecnode node) throws SemeticError {
 		node.scope=scoper.peek();
+		nowFunc=node.type.constructor;
 		Visit(node.block);
+		nowFunc=null;
 		return null;
 	}
 	@Override
-	public defined Visit(Continuenode node) {
+	public defined Visit(Continuenode node) throws SemeticError {
+		if (nowFor==null) throw new SemeticError("nothing to continue");
 		return null;
 	}
 	@Override
@@ -381,9 +400,11 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	@Override
 	public defined Visit(Fornode node) throws SemeticError {
 		node.scope=scoper.peek();
+		nowFor=node;
 		push();
 		Visit(node.con);
 		pop();
+		nowFor=null;
 		return null;
 	}
 	@Override
@@ -400,13 +421,23 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		node.type=node.func.returnval;
 		return node.func.returnval;
 	}
-	public Function SearchforFunc(Scope scope, String name) {
+	public Function SearchforFunc(Scope scope, String name) throws SemeticError {
 		if (scope.parent!=null) {
-			if (!scope.method.containsKey(name)) return SearchforFunc(scope.parent,name);
+			if (!scope.method.containsKey(name)) {
+				if (!scope.variable.containsKey(name)){
+					return SearchforFunc(scope.parent,name);
+				}
+				else throw new SemeticError();
+			}
 			else return scope.method.get(name);
 		}
 		else {
-			if (!scope.method.containsKey(name)) return null;
+			if (!scope.method.containsKey(name)){
+				if (!scope.variable.containsKey(name)){
+					return null;
+				}
+				else throw new SemeticError();
+			} 
 			else return scope.method.get(name);
 		}
 	}
