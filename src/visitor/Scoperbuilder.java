@@ -486,7 +486,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		node.scope=scoper.peek();
 		ArrayorType type=(ArrayorType) Visit(node.expr);
 		if (type.arraynum>0) throw new SemeticError("array has no member");
-		node.iflhs=node.expr.iflhs;
+		node.iflhs=true;
 		String id=node.identifier.id;
 		Variable get=type.type.field.get(id);
 		if (get==null) throw new SemeticError("no such member");
@@ -611,7 +611,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	}
 	@Override
 	public defined Visit(Thisnode node) throws SemeticError {
-		node.iflhs=true;
+		node.iflhs=false;
 		node.classtype=nowClass;
 		node.scope=scoper.peek();
 		if (nowClass==null) throw new SemeticError("This not in class");
