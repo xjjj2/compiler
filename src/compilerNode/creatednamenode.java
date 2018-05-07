@@ -10,5 +10,4 @@ public class creatednamenode extends node {
 	public creatednamenode() {
 		super();
 	}
-	
 }
