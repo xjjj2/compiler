@@ -13,6 +13,27 @@ public class Mainprocesser {
 	static Map<String,definedtype> classtype;
 	static Map<String,Function> topfuncs;
 	static TopScope top;
+	public static class VerboseListener extends BaseErrorListener {
+		@Override
+		public void syntaxError(Recognizer<?, ?> recognizer,
+		Object offendingSymbol,
+		int line, int charPositionInLine,
+		String msg,
+		RecognitionException e)
+		{
+		List<String> stack = ((Parser)recognizer).getRuleInvocationStack();
+		Collections.reverse(stack);
+		System.err.println("rule stack: "+stack);
+		System.err.println("line "+line+":"+charPositionInLine+" at "+
+		offendingSymbol+": "+msg);
+		}
+		}
+	public static class BailmlperLexer extends mlperLexer {
+		public BailmlperLexer(CharStream input) { super(input); }
+		public void recover(LexerNoViableAltException e) {
+		throw new RuntimeException(e); // Bail out
+		}
+		}
 /*	private static String readTestFile(String filePath) throws IOException {
         String ans = new String();
         File file = new File(filePath);
@@ -32,9 +53,10 @@ public class Mainprocesser {
     	else name="program.txt";
         InputStream is = new FileInputStream(name); // or System.in;
         ANTLRInputStream input = new ANTLRInputStream(is);
-        mlperLexer lexer = new mlperLexer(input);
+        BailmlperLexer lexer = new BailmlperLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         mlperParser parser = new mlperParser(tokens);
+        parser.setErrorHandler(new BailErrorStrategy());
         ParseTree tree = parser.compilationUnit(); 
         node ast;
         ast=new ASTconverter().visit(tree);
