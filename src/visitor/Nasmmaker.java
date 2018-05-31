@@ -154,6 +154,18 @@ public class Nasmmaker {
 		regvar[k]=var;
 		nasmlist.add("mov\t"+regname[k]+", "+getmem(var2));		
 	}
+	public void setvar(Var var,int k) {
+		usage[k]=true;
+		if (isImm(var)) {
+			return;
+		}
+		else if(isMem(var)) {
+			return;
+		}
+		Vari var2=(Vari) var;
+		var2.reg=regname[k];
+		regvar[k]=var;
+	}
 	public String regassign(Var i) {
 		if (!isImm(i) && !isMem(i)) {
 			if (((Vari)i).reg!=null)
@@ -291,6 +303,8 @@ public class Nasmmaker {
 				else {
 					var2=r.reg;
 				}
+				}
+				var2=getname(bin.var2);
 				if (bin.op.equals("/")||bin.op.equals("%")) {
 					mov("rax",l.reg);
 					Unary("idiv",regassign(bin.var2));
@@ -353,7 +367,6 @@ public class Nasmmaker {
 					Binary(op,l.reg,var2);
 				}
 			}
-		}
 			else if (isCJump(inst)) {
 				CJumpQuad cj=(CJumpQuad)inst;
 				Binary("cmp",getname(cj.par),"0");
@@ -391,12 +404,12 @@ public class Nasmmaker {
 					Binary("sub","rsp",String.valueOf(nowfunc.templong));
 					List<Temp> temp=lab2fun.get((Label)inst).temps;
 					for (int j=0;j<temp.size();++j) {
-						if (j==0) {putvar(temp.get(j), 5);usageque.add(5);}
-						if (j==1) {putvar(temp.get(j), 4);usageque.add(4);}
+						if (j==0) {setvar(temp.get(j), 5);usageque.add(5);}
+						if (j==1) {setvar(temp.get(j), 4);usageque.add(4);}
 						if (j==2) {mov(getname(temp.get(j)),"rdx");}
 						if (j==3) {mov(getname(temp.get(j)),"rcx");}
-						if (j==4) {putvar(temp.get(j), 8);usageque.add(8);}
-						if (j==5) {putvar(temp.get(j), 9);usageque.add(9);}
+						if (j==4) {setvar(temp.get(j), 8);usageque.add(8);}
+						if (j==5) {setvar(temp.get(j), 9);usageque.add(9);}
 					}
 					int j=temp.size();
 					calleesave.push("rbx");

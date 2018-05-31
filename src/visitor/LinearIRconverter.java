@@ -110,8 +110,8 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 	Function nowFunc;
 	public boolean ifreturn;
 	public void init() throws SemeticError {
+		functempnum=0;
 		Label initl=newLabel("_init");
-		initnum=0;
 		insert(initl);
 		Function init=new Function("_init",null);
 		lab2fun.put(initl, init);
@@ -129,7 +129,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 				insert(new AssignQuad(temp,tmp));
 			}
 		}
-		init.templong=initnum*8;
+		init.templong=functempnum*8;
 		insert(new Return());
 		for (Map.Entry<String, definedtype> entry:classtype.entrySet()) {
 			definedtype type=entry.getValue();
@@ -184,8 +184,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 	public Temp newtemp() {
 		++functempnum;
 		++tempnum;
-		++initnum;
-		return new Temp("_t"+String.valueOf(tempnum),getimm(-(functempnum-1)*8));
+		return new Temp("_t"+String.valueOf(tempnum),getimm(-(functempnum)*8));
 		
 	}
 	public Conststring newstring(String val) {
@@ -435,7 +434,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		nowFunc.temps.add(temp);
 		quadtop().functionhead=true;
 		Visit(node.block);
-		nowFunc.templong=functempnum;
+		nowFunc.templong=functempnum*8;
 		nowFunc=null;
 		if (!ifreturn) insert(new Return());
 		return null;
@@ -661,7 +660,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		}
 		if (functempnum>6) functempnum=6;
 		Visit(node.body);
-		nowFunc.templong=functempnum;
+		nowFunc.templong=functempnum*8;
 		nowFunc=null;
 		if (!ifreturn) insert(new Return());
 		return null;
