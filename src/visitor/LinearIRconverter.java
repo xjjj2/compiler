@@ -458,7 +458,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 			Var temp=newtemp();
 			insert(new MallocQuad(temp,getimm(node.name.type.typelong)));
 			insert(new Param(temp));
-			insert(new Call(null,"_cons"+nowClass.name,1));
+			insert(new Call(null,"_cons"+node.name.name,1));
 			return temp;
 		}
 		else {
