@@ -3,12 +3,13 @@ package type;
 import compilerNode.node;
 
 public class ArrayorType extends defined {
-	public definedtype type;
+	public defined type;
 	public int arraynum;
-	public definedtype getType() {
+	public int size=0;
+	public defined getType() {
 		return type;
 	}
-	public void setType(definedtype type) {
+	public void setType(defined type) {
 		this.type = type;
 		name=type.name;
 	}
@@ -18,7 +19,7 @@ public class ArrayorType extends defined {
 	public void setArraynum(int arraynum) {
 		this.arraynum = arraynum;
 	}
-	public ArrayorType(String name, node definenode, definedtype type, int arraynum) {
+	public ArrayorType(String name, node definenode, defined type, int arraynum) {
 		super(name, definenode);
 		this.type = type;
 		this.arraynum = arraynum;
@@ -30,7 +31,7 @@ public class ArrayorType extends defined {
 	public ArrayorType() {
 		super();
 	}
-	public ArrayorType(definedtype type, int arraynum) {
+	public ArrayorType(defined type, int arraynum) {
 		super();
 		if (type!=null) {
 			name=type.name;
@@ -43,5 +44,4 @@ public class ArrayorType extends defined {
 		this.type = type;
 		this.arraynum = arraynum;
 	}
-	
 }	

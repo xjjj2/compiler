@@ -1,7 +1,9 @@
-int __print() {
-
-}
+int b=10;
+int sum(int a,int b,int c,int d,int e,int f,int g,int h){
+	return a*b-c+d+e+f+g+h;
+}	
 int main() {
-int a = (new int[123])[31];
-__print();
+	int a=5;
+	b=b*a;
+    return sum(1,2,3,4,5,6,b,8);;
 }

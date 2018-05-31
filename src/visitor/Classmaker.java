@@ -127,6 +127,7 @@ public class Classmaker extends ASTBaseVisitor<defined>{
 				else if (t.getClass().equals(methoddec.class)) {
 					Visit(t);
 				}
+				else Visit(t);
 			}
 		}
 		return null;
@@ -206,7 +207,7 @@ public class Classmaker extends ASTBaseVisitor<defined>{
 			if (dec.member.getClass().equals(Fielddecnode.class)) {
 				Fielddecnode field=(Fielddecnode)(dec.member);
 				for (Vardeclaratornode vars:field.vars.vardecs) {
-					Variable variable=new Variable(vars.id.id,field);
+					Variable variable=new Variable(vars.id.id,vars);
 					definedtype type=classtype.get(field.type.name);
 					if (type==null) throw new SemeticError("Field with no such type");
 					else field.type.type.type=type;
@@ -363,8 +364,7 @@ public class Classmaker extends ASTBaseVisitor<defined>{
 
 
 	@Override
-	public defined Visit(Localvaridecnode node) {
-		// TODO Auto-generated method stub
+	public defined Visit(Localvaridecnode node) throws SemeticError {
 		return null;
 	}
 
@@ -477,7 +477,6 @@ public class Classmaker extends ASTBaseVisitor<defined>{
 
 	@Override
 	public ArrayorType Visit(Typenode node) throws SemeticError {
-		// TODO Auto-generated method stub
 		node.type.type=classtype.get(node.type.getName());
 		if (node.type.type==null) throw new SemeticError("Attribute with no such type");
 		return node.type;

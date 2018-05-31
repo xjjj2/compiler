@@ -12,10 +12,12 @@ public abstract class Scope {
 	public Map<String,Variable> variable;
 	public Map<String,Function> method;
 	public Scope parent;
+	public boolean ifclass;
 	public Scope() {
 		variable=new HashMap<>();
 		child=new ArrayList<localScope>();
 		method=new HashMap<>();
 		parent=null;
+		ifclass=false;
 	}
 }

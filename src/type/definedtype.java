@@ -8,14 +8,18 @@ import compilerNode.*;
 public class definedtype extends defined{
 	public Map<String,Variable> field;
 	public Map<String,Function> method;
+	public Map<String,Integer> fieldoffset;
 	public Function constructor;
+	public int typelong;
 	public boolean consetted;
 	public definedtype(String name, node definenode) {
 		super(name, definenode);
 		setdefaultconstructor();
 		field=new HashMap<String,Variable>();
 		method=new HashMap<String,Function>();
+		fieldoffset=new HashMap<>();
 		consetted=false;
+		typelong=0;
 	}
 	public void setdefaultconstructor() {
 		constructor=new Function(this.name,this.definenode);
@@ -27,7 +31,12 @@ public class definedtype extends defined{
 	}
 	public definedtype() {
 		super();
+		setdefaultconstructor();
 		consetted=false;
+		typelong=0;
+		field=new HashMap<String,Variable>();
+		method=new HashMap<String,Function>();
+		fieldoffset=new HashMap<>();
 	}
 	
 }

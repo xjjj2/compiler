@@ -1,4 +1,5 @@
 package compilerNode;
+import IR.Label;
 import type.*;
 public class Binarynode extends Exprnode {
 	public Exprnode left;

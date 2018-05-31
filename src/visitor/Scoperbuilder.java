@@ -84,6 +84,9 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	public ArrayorType abool;
 	public ArrayorType astring;
 	public Stack<Statementnode> nowLoop;
+	public boolean ifreturn;
+	public boolean classvar;
+	public boolean classfun;
 	public Variable SearchforVar(Scope sp,String id) throws SemeticError {
 		if (sp.parent!=null) {
 			if (!sp.variable.containsKey(id)) {
@@ -92,7 +95,10 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 				}
 				else throw new SemeticError();
 			}
-			else return sp.variable.get(id);
+			else {
+				classvar=sp.ifclass;
+				return sp.variable.get(id);
+			}
 		}
 		else {
 			if (!sp.variable.containsKey(id)) {
@@ -302,6 +308,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		for (Map.Entry<String, Variable> entry:node.classtype.field.entrySet()) {
 			node.scope.variable.put(entry.getKey(), entry.getValue());
 		}
+		node.scope.ifclass=true;
 		nowClass=node.classtype;
 		Visit(node.body);
 		pop();
@@ -417,9 +424,11 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	}
 	@Override
 	public defined Visit(Funcallnode node) throws SemeticError {
+		classfun=false;
 		node.iflhs=false;
 		node.scope=scoper.peek();
 		node.func=SearchforFunc(node.scope,node.name);
+		node.ifmethod=classfun;
 		if (node.func==null) throw new SemeticError("no such func");
 		if (node.func.attribute.size()!=node.exprlist.child.size()) throw new SemeticError("no such func");
 		for (int i=0;i<node.func.attribute.size();++i) {
@@ -437,8 +446,11 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 				}
 				else throw new SemeticError();
 			}
-			else return scope.method.get(name);
-		}
+			else {
+				classfun=scope.ifclass;
+				return scope.method.get(name);
+				}
+			}
 		else {
 			if (!scope.method.containsKey(name)){
 				if (!scope.variable.containsKey(name)){
@@ -476,8 +488,8 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 				if (!assignable(type,(ArrayorType) Visit(i.init)))
 					throw new SemeticError("varinit not correct");
 			}
-			
-			sp.variable.put(i.id.id, new Variable(i.id.id,node,type,i.init));
+			Variable var=new Variable(i.id.id,i,type,i.init);
+			sp.variable.put(i.id.id, var);
 		}
 		return null;
 	}
@@ -488,7 +500,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		if (type.arraynum>0) throw new SemeticError("array has no member");
 		node.iflhs=true;
 		String id=node.identifier.id;
-		Variable get=type.type.field.get(id);
+		Variable get=((definedtype)type.type).field.get(id);
 		if (get==null) throw new SemeticError("no such member");
 		node.type=get.type;
 		return node.type;
@@ -518,7 +530,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 			else node.type=aint;
 		}
 		else {
-			Function get=type.type.method.get(id.name);
+			Function get=((definedtype)type.type).method.get(id.name);
 			if (get==null) throw new SemeticError("no such method");
 			if (get.attribute.size()!=id.exprlist.child.size()) throw new SemeticError("no such method");
 			for (int i=0;i<get.attribute.size();++i) {
@@ -612,6 +624,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 	@Override
 	public defined Visit(Thisnode node) throws SemeticError {
 		node.iflhs=false;
+		node.linkpos=(methoddec) nowFunc.definenode;
 		node.classtype=nowClass;
 		node.scope=scoper.peek();
 		if (nowClass==null) throw new SemeticError("This not in class");
@@ -638,6 +651,8 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		node.scope=scoper.peek();
 		node.iflhs=true;
 		node.vardef=SearchforVar(scoper.peek(),node.id);
+		node.isfield=classvar;
+		classvar=false;
 		if (node.vardef==null) throw new SemeticError();
 		node.type=node.vardef.type;
 		return node.vardef.type;

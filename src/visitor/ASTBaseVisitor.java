@@ -54,8 +54,8 @@ abstract class ASTBaseVisitor<T> {
 	public abstract T Visit(Thisexprnode node) throws SemeticError;
 	public abstract T Visit(Thisnode node) throws SemeticError;
 	public abstract T Visit(Typenode node) throws SemeticError;
-	public abstract T Visit(Vardeclaratornode node);
-	public abstract T Visit(Vardeclaratorsnode node);
+	public abstract T Visit(Vardeclaratornode node) throws SemeticError;
+	public abstract T Visit(Vardeclaratorsnode node) throws SemeticError;
 	public abstract T Visit(Variablenode node) throws SemeticError;
 	public abstract T Visit(Voidnode node);
 	public abstract T Visit(Whilenode node) throws SemeticError;
