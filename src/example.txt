@@ -1,51 +1,46 @@
-//考察点：section 8 语句，包括if,while,for,break,continue,return等
-//算法：线性筛法求欧拉函数
-//样例输入：10
-//样例输出：
-//1
-//2
-//2
-//4
-//2
-//6
-//4
-//6
-//4
+int[][] a = new int[4][];
+int i;
+int j;
 
-int N;
-int M = 0;
-bool[] check;
+class rec {
+    int num;
+    int c;
+}
 
+rec[] b = new rec[5];
+
+int printNum(int num) {
+    println(toString(num));
+}
 int main() {
-    N = getInt();
-	check = new bool[N+5];
-	int i = 0;
-	while ( i <= N ) check[i++] = true;
-	int[] phi = new int[N+5];
-	int[] P = new int[N+5];
-	phi[1] = 1;
-	for (i = 2; ; ++i ) {
-		if ( i > N ) break;
-		if ( check[i] ) {
-			P[++M] = i;
-			phi[i] = i - 1;
-		}
-		int k = i;
-		int i;
-		for (i = 1; i <= M && (k * P[i] <= N); i++) {
-			int tmp = k * P[i];
-			if ( tmp > N ) continue;
-			check[tmp] = false;
-			if ( k % P[i] == 0) {
-				phi[tmp] = phi[k] * P[i];
-				break;
-			}
-			else {
-				phi[k * P[i]] = phi[k] * (P[i] - 1);
-			}
-		}
-		println(toString(phi[k]));
-	}
+    for (i = 0; i < 4; i++) {
+        a[i] = new int[11];
+    }
+
+
+    for (i = 0; i < 4; i ++) {
+        for (j = 0; j < 10; j ++)
+            a[i][j] = 888;
+    }
+    for (i = 0; i < 5; i ++) {
+	b[i] = new rec;
+        b[i].num = -1;
+    }
+
+    printNum(a[3][9]);
+    for (i = 0; i <= 3; i ++)
+        for (j = 0; j <= 9; j ++)
+            a[i][j] = i * 10 + j;
+
+    for (i = 0; i <= 3; i ++)
+        for (j = 0; j <= 9; j ++)
+            printNum(a[i][j]);
+    a[2][10]=0;
+    printNum(a[2][10]);
+    b[0].num = -2;
+    b[a[2][10]].num = -10;
+    printNum(b[0].num);
+    printNum(b[1].num);
     return 0;
 }
 

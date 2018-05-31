@@ -411,6 +411,24 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 	@Override
 	public Var Visit(Classdecnode node) throws SemeticError {
 		nowClass=node.classtype;
+		if (!nowClass.consetted) {
+			functempnum=0;
+			nowFunc=nowClass.constructor;
+			ifreturn=false;
+			String str="_cons"+nowClass.name;
+			global.add(str);
+			insert(newLabel(str));
+			lab2fun.put((Label) quadtop(), nowFunc);
+			Temp temp=newtemp();
+			reflect.put(node, temp);
+			topfuncs.put(str, nowFunc);
+			nowFunc.ifmethod=true;
+			nowFunc.temps.add(temp);
+			quadtop().functionhead=true;
+			nowFunc.templong=functempnum*8;
+			nowFunc=null;
+			if (!ifreturn) insert(new Return());
+		}
 		Visit(node.body);
 		nowClass=null;
 		return null;
