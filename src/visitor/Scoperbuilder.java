@@ -418,6 +418,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 		nowLoop.push(node);
 		push();
 		Visit(node.con);
+		Visit(node.statement);
 		pop();
 		nowLoop.pop();
 		return null;

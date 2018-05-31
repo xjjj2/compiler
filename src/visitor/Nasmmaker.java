@@ -182,7 +182,7 @@ public class Nasmmaker {
 		}
 		int k=usageque.pollFirst();
 		usageque.add(k);
-		if (!isImm(regvar[k]) && regvar[k]!=null) {
+		if (regvar[k]!=null && !isImm(regvar[k])  ) {
 			Vari var=(Vari)regvar[k];
 			savevari(var);
 		}
@@ -194,9 +194,11 @@ public class Nasmmaker {
 	}
 	public String getmem(Mem i) {
 		String ans="qword[";
+		if (i.pos.reg==null) regassign(i.pos);
 		ans+=i.pos.reg;
 		if (i.varoff!=null) {
 			ans+="+";
+			if (i.varoff.reg==null) regassign(i.varoff);
 			ans+=i.varoff.reg;
 			ans+="*"+String.valueOf(i.scale);
 		}
@@ -369,7 +371,9 @@ public class Nasmmaker {
 			}
 			else if (isCJump(inst)) {
 				CJumpQuad cj=(CJumpQuad)inst;
-				Binary("cmp",getname(cj.par),"0");
+				if (isImm(cj.par)) 
+				Binary("cmp",regassign(cj.par),"0");
+				else Binary("cmp",getname(cj.par),"0");
 				if (cj.Truelab!=null)
 					Unary("jne",cj.Truelab.label);
 				if (cj.Falselab!=null)
@@ -479,6 +483,7 @@ public class Nasmmaker {
 				while (callersave.size()>0) {
 					Unary("pop",callersave.pop());
 				}
+				mov(getname(((MallocQuad)inst).dest),"rax");
 			}
 			else if(isReturn(inst)) {
 				Return ret=(Return)inst;

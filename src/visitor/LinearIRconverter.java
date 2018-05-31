@@ -213,7 +213,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 			x=temp2;
 		}
 		insert(new BinaryQuad("+",x,getimm(1),tempmul));
-		insert(new BinaryQuad("x",tempmul,getimm(8),tempmul));
+		insert(new BinaryQuad("*",tempmul,getimm(8),tempmul));
 		insert(new MallocQuad(temp,tempmul));
 		insert(new AssignQuad(new Mem(temp),x));
 		insert(new BinaryQuad("+",temp,getimm(8),temp));
@@ -277,6 +277,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 
 	@Override
 	public Var Visit(Binarynode node) throws SemeticError {
+		
 		if (ifint(node.left.type)) {
 			Var left=Visit(node.left);
 			if (ismem(left)) {Var temp1=newtemp();insert(new AssignQuad(temp1,left));left=temp1;}
