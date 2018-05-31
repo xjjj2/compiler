@@ -116,12 +116,14 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		Function init=new Function("_init",null);
 		lab2fun.put(initl, init);
 		quadtop().functionhead=true;
+		int resnum=0;
 		for (Map.Entry<String, Variable> entry:topvars.entrySet()) {
 			Variable v=entry.getValue();
 			global.add(v.name);
 			Resarea temp=new Resarea();
 			temp.sz=8;
-			temp.name=entry.getKey();
+			++resnum;
+			temp.name="_res"+String.valueOf(resnum);
 			restoplist.add(temp);
 			reflect.put(v.definenode, temp);
 			if (v.init!=null) {
