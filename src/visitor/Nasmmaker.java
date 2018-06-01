@@ -349,6 +349,9 @@ public class Nasmmaker {
 					}
 					}
 				}
+				else {
+					mov(l.reg,getmem(l));
+				}
 				String var2;
 				if (isImm(bin.var2)) var2=getimm((Imm)bin.var2);
 				else if(isMem(bin.var2)) var2=getmem((Mem)bin.var2);

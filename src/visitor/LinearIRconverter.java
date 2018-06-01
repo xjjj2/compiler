@@ -223,14 +223,14 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		insert(new AssignQuad(temp2,temp));
 		if (exp.size()>0) {
 			Label lab1=newLabel();
-			Label lab2=newLabel();
+//			Label lab2=newLabel();
 			insert(lab1);
 			Vari temp3=recnew(exp);
 			insert(new AssignQuad(new Mem(temp2),temp3));
 			insert(new BinaryQuad("+",temp2,getimm(8),temp2));
 			insert(new BinaryQuad("-",x,getimm(1),(Vari) x));
-			insert(new CJumpQuad(x,lab1,lab2));
-			insert(lab2);
+			insert(new CJumpQuad(x,lab1,null));//lab2
+//			insert(lab2);
 		}
 		return temp;
 	}
@@ -332,10 +332,10 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 			cjump.par=left;
 			if (node.opcode.equals("&&")) {
 				cjump.Falselab=shortcut;
-				cjump.Truelab=rightlab;
+//				cjump.Truelab=rightlab;
 			}
 			else {
-				cjump.Falselab=rightlab;
+//				cjump.Falselab=rightlab;
 				cjump.Truelab=shortcut;
 			}
 			insert(cjump);
@@ -520,7 +520,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 
 	@Override
 	public Var Visit(forinitnode node) throws SemeticError {
-		return null;
+		return Visit(node.expr);
 	}
 
 	@Override
@@ -550,7 +550,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		if (node.con.init!=null)
 			Visit(node.con.init);
 		Label begin=newLabel();
-		Label Truelab=newLabel();
+//		Label Truelab=newLabel();
 		Label conduct=newLabel();
 		Label Falselab=newLabel();
 		contipt.push(conduct);
@@ -563,8 +563,8 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		CJumpQuad now1=new CJumpQuad();
 		now1.par=par;
 		insert(now1);
-		insert(Truelab);
-		now1.Truelab=Truelab;
+//		insert(Truelab);
+//		now1.Truelab=Truelab;
 		Visit(node.statement);
 		insert(conduct);
 		if (node.con.exprlist!=null)
@@ -887,15 +887,15 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		Label begin=newLabel();
 		Label Truelab=newLabel();
 		Label Falselab=newLabel();
-		contipt.push(Truelab);
+//		contipt.push(Truelab);
 		breakpt.push(Falselab);
 		insert(begin);
 		Var par=Visit(node.parexpr);
 		CJumpQuad now1=new CJumpQuad();
 		now1.par=par;
 		insert(now1);
-		insert(Truelab);
-		now1.Truelab=Truelab;
+//		insert(Truelab);
+//		now1.Truelab=Truelab;
 		Visit(node.statement);
 		JumpQuad j=new JumpQuad();
 		j.label=begin;
