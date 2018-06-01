@@ -264,9 +264,8 @@ public class Nasmmaker {
 	}
 	public String length(String i) {
 		int k=i.length();
-		String ans="0x00000000000000,";
-		ans+=String.valueOf(k);
-		ans+=",";
+		String ans=String.valueOf(k);
+		ans+=",0x00,0x00,0x00,0x00,0x00,0x00,0x00,";
 		return ans;
 	}
 	public void make() {
