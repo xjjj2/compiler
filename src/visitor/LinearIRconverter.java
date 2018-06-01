@@ -887,7 +887,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		Label begin=newLabel();
 		Label Truelab=newLabel();
 		Label Falselab=newLabel();
-//		contipt.push(Truelab);
+		contipt.push(Truelab);
 		breakpt.push(Falselab);
 		insert(begin);
 		Var par=Visit(node.parexpr);
