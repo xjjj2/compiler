@@ -611,16 +611,19 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		CJumpQuad now1=new CJumpQuad();
 		now1.par=par;
 		insert(now1);
-		Label Truelab=newLabel();
-		insert(Truelab);
-		now1.Truelab=Truelab;
+//		Label Truelab=newLabel();
+//		insert(Truelab);
+//		now1.Truelab=Truelab;
 		Visit(node.ifstatement);
+		Label fin=newLabel();
+		insert(new JumpQuad(fin));
 		Label Falselab=newLabel();
 		insert(Falselab);
 		now1.Falselab=Falselab;
 		if (node.ifelse) {
 			Visit(node.elsestatement);
 		}
+		insert(fin);
 		return null;
 	}
 
