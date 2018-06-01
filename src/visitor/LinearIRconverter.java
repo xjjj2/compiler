@@ -699,7 +699,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 				insert(new Param(left));
 			}
 			Vari temp=newtemp();
-			insert(new Call(temp,"_"+node.method.func.name+"_"+node.expr.type.name,t.size()));
+			insert(new Call(temp,"_"+node.method.func.name+"_"+node.expr.type.name,t.size()+1));
 			return temp;
 		}
 		else {
