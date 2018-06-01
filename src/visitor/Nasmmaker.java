@@ -364,6 +364,7 @@ public class Nasmmaker {
 				var2=getname(bin.var2);
 				if (bin.op.equals("/")||bin.op.equals("%")) {
 					mov("rax",l.reg);
+					nasmlist.add("cqo");
 					Unary("idiv",regassign(bin.var2,true));
 					if (bin.op.equals("/"))
 						mov(l.reg,"rax");
