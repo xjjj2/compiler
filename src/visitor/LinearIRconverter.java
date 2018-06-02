@@ -131,11 +131,16 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 			temp.name="_res"+String.valueOf(resnum);
 			restoplist.add(temp);
 			reflect.put(v.definenode, temp);
+		}
+		for (Map.Entry<String, Variable> entry:topvars.entrySet()) {
+			Variable v=entry.getValue();
+			Vari temp=reflect.get(v.definenode);
 			if (v.init!=null) {
 				Var tmp=Visit(v.init);
 				insert(new AssignQuad(temp,tmp));
 			}
 		}
+		
 		init.templong=functempnum*8;
 		insert(new Return());
 		for (Map.Entry<String, definedtype> entry:classtype.entrySet()) {
@@ -227,14 +232,16 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		Vari temp2=newtemp();
 		insert(new AssignQuad(temp2,temp));
 		if (exp.size()>0) {
+			Vari tempfor=newtemp();
+			insert(new AssignQuad(tempfor,x));
 			Label lab1=newLabel();
 //			Label lab2=newLabel();
 			insert(lab1);
 			Vari temp3=recnew(exp);
 			insert(new AssignQuad(new Mem(temp2),temp3));
 			insert(new BinaryQuad("+",temp2,getimm(8),temp2));
-			insert(new BinaryQuad("-",x,getimm(1),(Vari) x));
-			insert(new CJumpQuad(x,lab1,null));//lab2
+			insert(new BinaryQuad("-",tempfor,getimm(1),(Vari) tempfor));
+			insert(new CJumpQuad(tempfor,lab1,null));//lab2
 //			insert(lab2);
 		}
 		return temp;

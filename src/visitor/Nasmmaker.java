@@ -560,9 +560,9 @@ public class Nasmmaker {
 				saveregs();
 			}
 			else if(isMalloc(inst)) {
-				if (regvar[5]!=null) {Unary("push","rdi");callersave.push("rdi");}
-				if (regvar[10]!=null) {Unary("push","r10");callersave.push("r10");}
-				if (regvar[11]!=null) {Unary("push","r11");callersave.push("r11");}
+				Unary("push","rdi");callersave.push("rdi");
+				Unary("push","r10");callersave.push("r10");
+				Unary("push","r11");callersave.push("r11");
 				mov("rdi",getname(((MallocQuad)inst).size));
 				Unary("call","malloc");
 				while (callersave.size()>0) {
