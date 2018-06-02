@@ -289,7 +289,7 @@ public class Nasmmaker {
 				}
 				else {
 					char c=(i.val).charAt(j);
-					if (c=='n') converter.add(13);
+					if (c=='n') converter.add(10);
 					else converter.add((int)c);
 					flag=false;
 				}
