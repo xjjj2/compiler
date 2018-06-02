@@ -278,7 +278,28 @@ public class Nasmmaker {
 		nasmlist.add("SECTION .data\t");
 		for (Conststring i:contoplist) {
 			nasmlist.add(i.name+":");
-			nasmlist.add("db\t"+length(i.val)+"\""+i.val+"\""+",0");
+			ArrayList<Integer> converter=new ArrayList<>();
+			boolean flag=false;
+			for (int j=0;j<i.val.length();++j) {
+				if (flag==false) {
+					char c=(i.val).charAt(j);
+					if (c!='\\')
+							converter.add((int) c);
+					else flag=true;
+				}
+				else {
+					char c=(i.val).charAt(j);
+					if (c=='n') converter.add(13);
+					else converter.add((int)c);
+					flag=false;
+				}
+			}
+			String ans;
+			ans="db\t"+String.valueOf(converter.size());
+			ans+=",0x00,0x00,0x00,0x00,0x00,0x00,0x00,";
+			for (int j=0;j<converter.size();++j)
+				ans+=(String.valueOf(converter.get(j))+",");
+			nasmlist.add(ans+"0");
 		}
 		nasmlist.add("SECTION .bss\t");
 		for (Resarea i:restoplist) {

@@ -278,26 +278,8 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 	}
 
 	@Override
-	public Var Visit(Binarynode node) throws SemeticError {
-		
-		if (ifint(node.left.type)) {
-			Var left=Visit(node.left);
-			if (ismem(left)) {Var temp1=newtemp();insert(new AssignQuad(temp1,left));left=temp1;}
-			Var right=Visit(node.right);
-/*			if (ifimm(left) && ifimm(right)) {
-				int a;
-				if (node.opcode)
-				((Imm)left).val+((Imm)right).val;
-				return getimm(a);
-			}
-			else {*/
-				BinaryQuad now=new BinaryQuad(left,right,newtemp());
-				now.op=node.opcode;
-				insert(now);
-				return now.vardest;
-//			}
-		}
-		else if (ifstring(node.left.type)){
+	public Var Visit(Binarynode node) throws SemeticError {	
+		if (ifstring(node.left.type)){
 			Var left=Visit(node.left);
 			Var right=Visit(node.right);
 			if (ismem(left)) {Var temp1=newtemp();insert(new AssignQuad(temp1,left));left=temp1;}
@@ -320,7 +302,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 			if (node.opcode.equals("!=")) insert(new Call(temp,"_Str_NE",2));
 			return temp;
 		}
-		else { 
+		else if (ifbool(node.left.type)) { 
 			Vari temp=newtemp();
 			Var left=Visit(node.left);
 			if (ismem(left)) {Var temp1=newtemp();insert(new AssignQuad(temp1,left));left=temp1;}
@@ -334,7 +316,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 				cjump.Falselab=shortcut;
 //				cjump.Truelab=rightlab;
 			}
-			else {
+			else { 
 //				cjump.Falselab=rightlab;
 				cjump.Truelab=shortcut;
 			}
@@ -349,6 +331,23 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 			insert(new BinaryQuad(node.opcode,left,right,temp));
 			insert(last);
 			return temp;
+		}
+		else  {
+			Var left=Visit(node.left);
+			if (ismem(left)) {Var temp1=newtemp();insert(new AssignQuad(temp1,left));left=temp1;}
+			Var right=Visit(node.right);
+/*			if (ifimm(left) && ifimm(right)) {
+				int a;
+				if (node.opcode)
+				((Imm)left).val+((Imm)right).val;
+				return getimm(a);
+			}
+			else {*/
+				BinaryQuad now=new BinaryQuad(left,right,newtemp());
+				now.op=node.opcode;
+				insert(now);
+				return now.vardest;
+//			}
 		}
 	}
 
@@ -427,7 +426,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 			quadtop().functionhead=true;
 			nowFunc.templong=functempnum*8;
 			nowFunc=null;
-			if (!ifreturn) insert(new Return());
+			insert(new Return());
 		}
 		Visit(node.body);
 		nowClass=null;
@@ -457,7 +456,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		Visit(node.block);
 		nowFunc.templong=functempnum*8;
 		nowFunc=null;
-		if (!ifreturn) insert(new Return());
+		insert(new Return());
 		return null;
 	}
 
@@ -686,7 +685,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		Visit(node.body);
 		nowFunc.templong=functempnum*8;
 		nowFunc=null;
-		if (!ifreturn) insert(new Return());
+		insert(new Return());
 		return null;
 	}
 
@@ -888,9 +887,9 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 	@Override
 	public Var Visit(Whilenode node) throws SemeticError {
 		Label begin=newLabel();
-		Label Truelab=newLabel();
+//		Label Truelab=newLabel();
 		Label Falselab=newLabel();
-		contipt.push(Truelab);
+		contipt.push(begin);
 		breakpt.push(Falselab);
 		insert(begin);
 		Var par=Visit(node.parexpr);
