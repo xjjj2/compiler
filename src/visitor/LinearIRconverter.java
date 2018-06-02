@@ -90,8 +90,13 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		this.topvars=topvars;
 		this.classtype=classtype;
 	}
+	public boolean isArrayOrMember(node n) {
+		return (n.getClass().equals(Membernode.class)||n.getClass().equals(Arraynode.class));
+	}
 	public boolean Assigning(node n){
-		if (n.parent.getClass().equals(Assignnode.class)) return true;
+		if (n.parent==null) return false;
+		if (n.getClass().equals(Variablenode.class) && n.parent.parent.getClass().equals(Assignnode.class)) return true;
+		if (isArrayOrMember(n) &&n.parent.getClass().equals(Assignnode.class)) return true;
 		if (n.parent.getClass().equals(Prefixnode.class) && 
 			(((Prefixnode)n.parent).prefix().equals("++") || ((Prefixnode)n.parent).prefix().equals("--")))
 			return true;
