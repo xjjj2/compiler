@@ -72,11 +72,11 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 	public Map<Label,Function> lab2fun;
 	public Map<node,Vari> reflect;
 	public Map<String,Function> topfuncs;
-	public Map<String,Variable> topvars;
+	public List<Variable> topvars;
 	public Map<String,definedtype> classtype;
 	public Stack<Label> contipt;
 	public Stack<Label> breakpt;  
-	public LinearIRconverter (Map<String,Function>topfuncs,Map<String,Variable> topvars,Map<String,definedtype> classtype) {
+	public LinearIRconverter (Map<String,Function>topfuncs,List<Variable> topvars,Map<String,definedtype> classtype) {
 		quadlist=new ArrayList<>();
 		contoplist=new ArrayList<>();
 		restoplist=new ArrayList<>();
@@ -122,8 +122,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		lab2fun.put(initl, init);
 		quadtop().functionhead=true;
 		int resnum=0;
-		for (Map.Entry<String, Variable> entry:topvars.entrySet()) {
-			Variable v=entry.getValue();
+		for (Variable v:topvars) {
 			global.add(v.name);
 			Resarea temp=new Resarea();
 			temp.sz=8;
@@ -131,10 +130,6 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 			temp.name="_res"+String.valueOf(resnum);
 			restoplist.add(temp);
 			reflect.put(v.definenode, temp);
-		}
-		for (Map.Entry<String, Variable> entry:topvars.entrySet()) {
-			Variable v=entry.getValue();
-			Vari temp=reflect.get(v.definenode);
 			if (v.init!=null) {
 				Var tmp=Visit(v.init);
 				insert(new AssignQuad(temp,tmp));

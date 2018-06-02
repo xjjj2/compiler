@@ -12,7 +12,7 @@ import visitor.mlperParser.CompilationUnitContext;
 public class Mainprocesser {
 	static Map<String,definedtype> classtype;
 	static Map<String,Function> topfuncs;
-	static Map<String,Variable> topvars;
+	static List<Variable> topvars;
 	static TopScope top;
 	static List<String> nasm;
 	public static String Loadlib() {
@@ -453,7 +453,7 @@ public class Mainprocesser {
         top.classtype=classtype;
         Scoperbuilder smaker=new Scoperbuilder(classtype,topfuncs,top);
         smaker.Visit(ast);
-        topvars=top.variable;
+        topvars=top.seq;
         LinearIRconverter ir=new LinearIRconverter(topfuncs,topvars,classtype);
         ir.Visit(ast);
         Nasmmaker maker=new Nasmmaker(ir.quadlist,ir.global,ir.contoplist,ir.restoplist,ir.lab2fun);

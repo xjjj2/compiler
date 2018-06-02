@@ -491,6 +491,7 @@ public class Scoperbuilder extends ASTBaseVisitor<defined> {
 			}
 			Variable var=new Variable(i.id.id,i,type,i.init);
 			sp.variable.put(i.id.id, var);
+			sp.seq.add(var);
 		}
 		return null;
 	}
