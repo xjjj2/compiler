@@ -1,14 +1,39 @@
+
+int N;
+int M = 0;
+bool[] check;
+
 int main() {
-    int n = 10;
-    int f0 = 0;
-    int f1 = 1;
-    int f2;
-    int i;
-    for (i = 1; i < n; ++i) {
-        f2 = f0 + f1;
-        f0 = f1;
-        f1 = f2;
-    }
-    println(toString(f2));
-    return f2;
+    N = getInt();
+	check = new bool[N+5];
+	int i = 0;
+	while ( i <= N ) check[i++] = true;
+	int[] phi = new int[N+5];
+	int[] P = new int[N+5];
+	phi[1] = 1;
+	for (i = 2; ; ++i ) {
+		if ( i > N ) break;
+		if ( check[i] ) {
+			P[++M] = i;
+			phi[i] = i - 1;
+		}
+		int k = i;
+		int i;
+		for (i = 1; i <= M && (k * P[i] <= N); i++) {
+			int tmp = k * P[i];
+			if ( tmp > N ) continue;
+			check[tmp] = false;
+			if ( k % P[i] == 0) {
+				phi[tmp] = phi[k] * P[i];
+				break;
+			}
+			else {
+				phi[k * P[i]] = phi[k] * (P[i] - 1);
+			}
+		}
+		println(toString(phi[k]));
+	}
+    return 0;
 }
+
+

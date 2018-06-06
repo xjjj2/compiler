@@ -269,12 +269,12 @@ public class Nasmmaker {
 	}
 	public String getmem(Mem i) throws SemeticError {
 		String ans="qword[";
-		tempreg(i.pos,3);
-		ans+=i.pos.tempreg;
+		mov("rcx",getname(i.pos));
+		ans+="rcx";
 		if (i.varoff!=null) {
 			ans+="+";
-			tempreg(i.varoff,2);
-			ans+=i.varoff.tempreg;
+			mov("rbx",getname(i.varoff));
+			ans+="rbx";
 			ans+="*"+String.valueOf(i.scale);
 		}
 		if (i.offset!=null) {
@@ -359,6 +359,11 @@ public class Nasmmaker {
 				BinaryQuad bin=(BinaryQuad)inst;
 				Vari l=bin.vardest;
 				tempreg(l,0);
+				if (getname(bin.var2).equals(getname(bin.vardest))) {
+					Var var=bin.var1;
+					bin.var1=bin.var2;
+					bin.var2=var;
+				}
 				if (bin.var1!=bin.vardest) {
 					mov(l.tempreg,getname(bin.var1));
 				}
