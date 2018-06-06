@@ -65,9 +65,11 @@ import type.*;
 
 public class LinearIRconverter extends ASTBaseVisitor<Var> {
 	public List<Quad> quadlist;
+	public List<Temp> tempset;
 	public List<Conststring> contoplist;
 	public List<Resarea> restoplist;
 	public List<String> global;
+	public Label nowLabel;
 	public Map<String,Label> Labels;
 	public Map<Label,Function> lab2fun;
 	public Map<node,Vari> reflect;
@@ -80,6 +82,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		quadlist=new ArrayList<>();
 		contoplist=new ArrayList<>();
 		restoplist=new ArrayList<>();
+		tempset=new ArrayList<>();
 		global=new ArrayList<>();
 		Labels=new HashMap<>();
 		lab2fun=new HashMap<>();
@@ -117,6 +120,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 	public void init() throws SemeticError {
 		functempnum=0;
 		Label initl=newLabel("_init");
+		nowLabel=initl;
 		insert(initl);
 		Function init=new Function("_init",null);
 		lab2fun.put(initl, init);
@@ -191,7 +195,10 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 	public Temp newtemp() {
 		++functempnum;
 		++tempnum;
-		return new Temp("_t"+String.valueOf(tempnum),getimm(-(functempnum)*8));
+		Temp temp=new Temp("_t"+String.valueOf(tempnum),getimm(-(functempnum)*8));
+		tempset.add(temp);
+		nowLabel.usedtemp.add(temp);
+		return temp;
 		
 	}
 	public Conststring newstring(String val) {
@@ -423,7 +430,9 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 			ifreturn=false;
 			String str="_cons"+nowClass.name;
 			global.add(str);
-			insert(newLabel(str));
+			Label lab=newLabel(str);
+			nowLabel=lab;
+			insert(lab);
 			lab2fun.put((Label) quadtop(), nowFunc);
 			Temp temp=newtemp();
 			reflect.put(node, temp);
@@ -452,7 +461,9 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		ifreturn=false;
 		String str="_cons"+nowClass.name;
 		global.add(str);
-		insert(newLabel(str));
+		Label lab=newLabel(str);
+		nowLabel=lab;
+		insert(lab);
 		lab2fun.put((Label) quadtop(), nowFunc);
 		Temp temp=newtemp();
 		reflect.put(node, temp);
@@ -622,14 +633,18 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 //		now1.Truelab=Truelab;
 		Visit(node.ifstatement);
 		Label fin=newLabel();
-		insert(new JumpQuad(fin));
-		Label Falselab=newLabel();
-		insert(Falselab);
-		now1.Falselab=Falselab;
 		if (node.ifelse) {
+			insert(new JumpQuad(fin));
+			Label Falselab=newLabel();
+			insert(Falselab);
+			now1.Falselab=Falselab;
 			Visit(node.elsestatement);
+			insert(fin);
 		}
-		insert(fin);
+		else {
+			now1.Falselab=fin;
+			insert(fin);
+		}
 		return null;
 	}
 
@@ -665,7 +680,9 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		ifreturn=false;
 		if (nowClass==null) {
 			global.add(node.func.name);
-			insert(newLabel(node.func.name));
+			Label lab=newLabel(node.func.name);
+			nowLabel=lab;
+			insert(lab);
 			lab2fun.put((Label) quadtop(), node.func);
 			quadtop().functionhead=true;
 			if (nowFunc.name.equals("main")) insert(new Call(null,"_init",0));
@@ -673,7 +690,9 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		else {
 			String str="_"+node.func.name+"_"+nowClass.name;
 			global.add(str);
-			insert(newLabel(str));
+			Label lab=newLabel(str);
+			nowLabel=lab;
+			insert(lab);
 			lab2fun.put((Label) quadtop(), node.func);
 			Temp temp=newtemp();
 			reflect.put(node, temp);

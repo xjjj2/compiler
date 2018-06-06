@@ -1,5 +1,6 @@
 package IR;
 
+import java.util.*;
 
 public class Call extends Quad {
 	public Vari retval;

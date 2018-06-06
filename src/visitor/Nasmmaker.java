@@ -1,5 +1,6 @@
 package visitor;
 import java.util.*;
+import Error.SemeticError;
 import IR.*;
 import type.*;
 public class Nasmmaker {
@@ -89,16 +90,16 @@ public class Nasmmaker {
 	public void Unary(String op,String a) {
 		nasmlist.add(op+"\t"+a);
 	}
-	public String getname(Var i) {
+	public String getname(Var i) throws SemeticError {
 		if (isImm(i)) {
 			return getimm((Imm)i);
 		}
 		if (isMem(i)) {
 			return getmem((Mem)i);
 		}
-		if (((Vari)i).reg==null) 
+		if (((Vari)i).colornum==-1) 
 			return getmem((Vari)i);
-		return ((Vari)i).reg;
+		return regname[((Vari)i).colornum];
 	}
 	public String getimm(Imm i) {
 		String k="";
@@ -120,12 +121,21 @@ public class Nasmmaker {
 		return ans;
 	}
 	public void saveregs() {
-		savereg(1);
-		savereg(14);
-		savereg(15);
-	//	for (int i=8;i<16;++i) savereg(i);
+		savereg(0);
+		savereg(2);
+		savereg(3);
 	}
-	public void savevari(Vari var) {
+	public void savereg(int k) {
+		if (regvar[k]==null) return;
+		if (!isImm(regvar[k])&&!isMem(regvar[k])) {
+			Vari var=(Vari)regvar[k];
+			mov(getmem(var),var.tempreg);
+			var.tempreg=null;
+			regvar[k]=null;
+			usage[k]=false;
+		}
+	}
+/*	public void savevari(Vari var) {
 		if (var.reg==null) return;
 		if (isResarea(var)) {
 			nasmlist.add("mov\tqword ["+var.name+"] , "+var.reg);
@@ -135,16 +145,6 @@ public class Nasmmaker {
 		}
 		regvar[regint.get(var.reg)]=null;
 		var.reg=null;
-	}
-	public void savereg(int k) {
-		if (regvar[k]==null) return;
-		if (!isImm(regvar[k])&&!isMem(regvar[k])) {
-			Vari var=(Vari)regvar[k];
-			mov(getmem(var),var.reg);
-			var.reg=null;
-			regvar[k]=null;
-			usage[k]=false;
-		}
 	}
 	public void putvar(Var var,int k) {
 		usage[k]=true;
@@ -174,15 +174,15 @@ public class Nasmmaker {
 		regvar[k]=var;
 	}
 	int k=0;
-/*	public void resetregs() {
+	public void resetregs() {
 		for (int i=0;)
-	}*/
+	}
 	public String regassign(Var i,boolean h) {
 		if (!isImm(i) && !isMem(i)) {
 			if (((Vari)i).reg!=null)
 				return ((Vari)i).reg;
 		}
-/*		if (usageque.size()<11) {
+		if (usageque.size()<11) {
 			for(int i1=0;i1<16;++i1) {
 				if (!usage[i1]) {
 					boolean h=false;
@@ -203,7 +203,7 @@ public class Nasmmaker {
 			savevari(var);
 		}
 		putvar(i,k);
-		return regname[k];*/
+		return regname[k];
 		if (h) {
 		++k;
 		k%=3;
@@ -242,18 +242,38 @@ public class Nasmmaker {
 				return "r15";
 			}
 		}
+	}*/
+	public String reg(int i) {
+		return regname[i];
 	}
 	public void mov(String a,String b) {
-		nasmlist.add("mov\t"+a+" , "+b);
+		if (!a.equals(b))
+			nasmlist.add("mov\t"+a+" , "+b);
 	}
-	public String getmem(Mem i) {
+	public String tempreg(Var t,int k) throws SemeticError {
+		if (k!=0 && k!=2 && k!=3) throw new SemeticError();
+		if (isMem(t)||isImm(t)) {
+			mov(regname[k],getname(t));
+			t.tempreg=regname[k];
+			return t.tempreg;
+		}
+		Vari tp=(Vari) t;
+		if (tp.colornum!=-1) t.tempreg=getname(t);
+		else {
+			mov(regname[k],getname(t));
+			t.tempreg=regname[k];
+			regvar[k]=t;
+		}
+		return t.tempreg;
+	}
+	public String getmem(Mem i) throws SemeticError {
 		String ans="qword[";
-		if (i.pos.reg==null) regassign(i.pos,true);
-		ans+=i.pos.reg;
+		tempreg(i.pos,0);
+		ans+=i.pos.tempreg;
 		if (i.varoff!=null) {
 			ans+="+";
-			if (i.varoff.reg==null) regassign(i.varoff,true);
-			ans+=i.varoff.reg;
+			tempreg(i.varoff,2);
+			ans+=i.varoff.tempreg;
 			ans+="*"+String.valueOf(i.scale);
 		}
 		if (i.offset!=null) {
@@ -268,7 +288,7 @@ public class Nasmmaker {
 		ans+=",0x00,0x00,0x00,0x00,0x00,0x00,0x00,";
 		return ans;
 	}
-	public void make() {
+	public void make() throws SemeticError {
 		Stack<String> callersave=new Stack<>();
 		Stack<String> calleesave=new Stack<>();
 		Stack<Var> param=new Stack<>();
@@ -315,127 +335,87 @@ public class Nasmmaker {
 					if(isImm(ass.rhs)) mov(getmem((Mem)ass.lhs),getimm((Imm)ass.rhs));
 					else {
 						Vari a=(Vari)ass.rhs;
-						if (a.reg==null) {
-							mov(getmem((Mem)ass.lhs),regassign(a,true));
-						}
-						else {
-							mov(getmem((Mem)ass.lhs),a.reg);
-						}
+						tempreg(a,0);
+						mov(getmem((Mem)ass.lhs),a.tempreg);
 					}
 				}
 				else if(isResarea(ass.lhs)) {
 					if(isImm(ass.rhs)) mov(getmem((Resarea)ass.lhs),getimm((Imm)ass.rhs));
 					else {
 						Vari a=(Vari)ass.rhs;
-						if (a.reg==null) {
-							mov(getmem((Resarea)ass.lhs),regassign(a,true));
-						}
-						else {
-							mov(getmem((Resarea)ass.lhs),a.reg);
-						}
+						tempreg(a,0);
+						mov(getmem((Resarea)ass.lhs),a.tempreg);
 					}
 				}
 				else{
 					Vari l=(Vari)ass.lhs;
-					if (l.reg==null) regassign(l,false);
-					if (isImm(ass.rhs)) mov(l.reg,getimm((Imm)ass.rhs));
-					else if(isMem(ass.rhs)) mov(l.reg,getmem((Mem)ass.rhs));
-					else {
-						Vari r=(Vari)ass.rhs;
-						if (r.reg==null) {
-							mov(l.reg,getmem(r));
-						}
-						else {
-							mov(l.reg,r.reg);
-						}
-					}
+					tempreg(l, 0);
+					mov(l.tempreg,getname(ass.rhs));
 				}
 				saveregs();
 			}
 			else if (isBinary(inst)) {
 				BinaryQuad bin=(BinaryQuad)inst;
 				Vari l=bin.vardest;
-				if (bin.vardest.reg==null) regassign(bin.vardest,false);
+				tempreg(l,0);
 				if (bin.var1!=bin.vardest) {
-					if (isImm(bin.var1)) mov(l.reg,getimm((Imm)bin.var1));
-					else if(isMem(bin.var1)) mov(l.reg,getmem((Mem)bin.var1));
-					else {
-						Vari r=(Vari)bin.var1;
-						if (r.reg==null) {
-						mov(l.reg,getmem(r));
-					}
-					else {
-						mov(l.reg,r.reg);
-					}
-					}
-				}
-				else {
-					mov(l.reg,getmem(l));
+					mov(l.tempreg,getname(bin.var1));
 				}
 				String var2;
-				if (isImm(bin.var2)) var2=getimm((Imm)bin.var2);
-				else if(isMem(bin.var2)) var2=getmem((Mem)bin.var2);
-				else {
-					Vari r=(Vari)bin.var2;
-					if (r.reg==null) {
-					var2=getmem(r);
-				}
-				else {
-					var2=r.reg;
-				}
-				}
 				var2=getname(bin.var2);
 				if (bin.op.equals("/")||bin.op.equals("%")) {
-					mov("rax",l.reg);
+					if (!l.tempreg.equals("rax"))
+						mov("rax",l.tempreg);
 					nasmlist.add("cqo");
-					Unary("idiv",regassign(bin.var2,true));
+					tempreg(bin.var2,2);
+					Unary("idiv",bin.var2.tempreg);
 					if (bin.op.equals("/"))
-						mov(l.reg,"rax");
-					else mov(l.reg,"rdx");
+						mov(l.tempreg,"rax");
+					else mov(l.tempreg,"rdx");
 				}
 				else if(bin.op.equals("<")) {
-					Binary("cmp",l.reg,var2);
+					Binary("cmp",l.tempreg,var2);
 					mov("rax","0");
 					Unary("setl","al");
-					mov(l.reg,"rax");
+					mov(l.tempreg,"rax");
 				}
 				else if(bin.op.equals("<=")) {
-					Binary("cmp",l.reg,var2);
+					Binary("cmp",l.tempreg,var2);
 					mov("rax","0");
 					Unary("setle","al");
-					mov(l.reg,"rax");
+					mov(l.tempreg,"rax");
 				}
 				else if(bin.op.equals(">")) {
-					Binary("cmp",l.reg,var2);
+					Binary("cmp",l.tempreg,var2);
 					mov("rax","0");
 					Unary("setg","al");
-					mov(l.reg,"rax");
+					mov(l.tempreg,"rax");
 				}
 				else if(bin.op.equals(">=")) {
-					Binary("cmp",l.reg,var2);
+					Binary("cmp",l.tempreg,var2);
 					mov("rax","0");
 					Unary("setge","al");
-					mov(l.reg,"rax");
+					mov(l.tempreg,"rax");
 				}
 				else if(bin.op.equals("==")) {
-					Binary("cmp",l.reg,var2);
+					Binary("cmp",l.tempreg,var2);
 					mov("rax","0");
 					Unary("sete","al");
-					mov(l.reg,"rax");
+					mov(l.tempreg,"rax");
 				}
 				else if(bin.op.equals("!=")) {
-					Binary("cmp",l.reg,var2);
+					Binary("cmp",l.tempreg,var2);
 					mov("rax","0");
 					Unary("setne","al");
-					mov(l.reg,"rax");
+					mov(l.tempreg,"rax");
 				}
 				else if(bin.op.equals(">>")) {
 					mov("rcx",var2);
-					Binary("sar",l.reg,"cl");
+					Binary("sar",l.tempreg,"cl");
 				}
 				else if(bin.op.equals("<<")) {
 					mov("rcx",var2);
-					Binary("sal",l.reg,"cl");
+					Binary("sal",l.tempreg,"cl");
 				}
 				else {
 					String op="";
@@ -445,14 +425,14 @@ public class Nasmmaker {
 					else if (bin.op.equals("&")||bin.op.equals("&&")) op="and";
 					else if (bin.op.equals("|")||bin.op.equals("||")) op="or";
 					else if (bin.op.equals("^")) op="xor";
-					Binary(op,l.reg,var2);
+					Binary(op,l.tempreg,var2);
 				}
 				saveregs();
 			}
 			else if (isCJump(inst)) {
 				CJumpQuad cj=(CJumpQuad)inst;
 				if (isImm(cj.par)) 
-				Binary("cmp",regassign(cj.par,true),"0");
+				Binary("cmp",tempreg(cj.par,0),"0");
 				else Binary("cmp",getname(cj.par),"0");
 				saveregs();
 				if (cj.Truelab!=null)
@@ -465,18 +445,18 @@ public class Nasmmaker {
 			}
 			else if (isUniary(inst)) {
 				UniQuad uni=(UniQuad)(inst);
-				regassign(uni.dest,false);
+				tempreg(uni.dest,0);
 				if (uni.op.equals("~")) {
-					mov(uni.dest.reg,getname(uni.src));
-					Unary("not",uni.dest.reg);
+					mov(uni.dest.tempreg,getname(uni.src));
+					Unary("not",uni.dest.tempreg);
 				}
 				else if (uni.op.equals("-")) {
-					mov(uni.dest.reg,getname(uni.src));
-					Unary("neg",uni.dest.reg);
+					mov(uni.dest.tempreg,getname(uni.src));
+					Unary("neg",uni.dest.tempreg);
 				}
 				else if (uni.op.equals("!")) {
-					mov(uni.dest.reg,"1");
-					Binary("sub",uni.dest.reg,getname(uni.src));
+					mov(uni.dest.tempreg,"1");
+					Binary("sub",uni.dest.tempreg,getname(uni.src));
 				}
 				saveregs();
 			}
@@ -497,12 +477,12 @@ public class Nasmmaker {
 						if (j==4) mov(getname(temp.get(j)),"r8");//{setvar(temp.get(j), 8);usageque.add(8);}
 						if (j==5) mov(getname(temp.get(j)),"r9");//{setvar(temp.get(j), 9);usageque.add(9);}
 					}
-					int j=temp.size();
-					calleesave.push("rbx");
-					Unary("push","rbx");
-					for (int k=14;k<16;++k) {
-						calleesave.push(regname[k]);
-						Unary("push",regname[k]);
+					Label ins=(Label) inst;
+					for (int j=0;j<16;++j) {
+						if (ins.usedreg[j]) {
+							calleesave.push(regname[j]);
+							Unary("push",regname[j]);
+						}
 					}
 /*					if (j<1) {
 						calleesave.push("rdi");
@@ -529,12 +509,12 @@ public class Nasmmaker {
 			}
 			else if(isCall(inst)) {
 				Call cl=(Call)inst;
-				if (regvar[5]!=null) {Unary("push","rdi");callersave.push("rdi");}
-				if (regvar[4]!=null) {Unary("push","rsi");callersave.push("rsi");}
-				if (regvar[8]!=null) {Unary("push","r8");callersave.push("r8");}
-				if (regvar[9]!=null) {Unary("push","r9");callersave.push("r9");}
-				if (regvar[10]!=null) {Unary("push","r10");callersave.push("r10");}
-				if (regvar[11]!=null) {Unary("push","r11");callersave.push("r11");}
+				if (cl.num>0) {Unary("push","rdi");callersave.push("rdi");}
+				if (cl.num>1) {Unary("push","rsi");callersave.push("rsi");}
+				if (cl.num>4) {Unary("push","r8");callersave.push("r8");}
+				if (cl.num>5) {Unary("push","r9");callersave.push("r9");}
+				Unary("push","r10");callersave.push("r10");
+				Unary("push","r11");callersave.push("r11");
 				for (int j=cl.num;j>0;--j) {
 					if (j>6) {
 						Unary("push",getname(param.pop()));
@@ -556,7 +536,7 @@ public class Nasmmaker {
 					Unary("pop",callersave.pop());
 				}
 				if (cl.retval!=null)
-					mov(regassign(cl.retval,false),"rax");
+					mov(getname(cl.retval),"rax");
 				saveregs();
 			}
 			else if(isMalloc(inst)) {
