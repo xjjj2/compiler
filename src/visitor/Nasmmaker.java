@@ -360,9 +360,12 @@ public class Nasmmaker {
 				Vari l=bin.vardest;
 				tempreg(l,0);
 				String var2;
+				boolean same=false;
 				if (getname(bin.var2).equals(l.tempreg)) {
 					mov("rcx",getname(bin.var2));
 					var2="rcx";
+					bin.var2.tempreg="rcx";
+					same=true;
 				}
 				else 
 					var2=getname(bin.var2);
@@ -374,7 +377,8 @@ public class Nasmmaker {
 					if (!l.tempreg.equals("rax"))
 						mov("rax",l.tempreg);
 					nasmlist.add("cqo");
-					tempreg(bin.var2,2);
+					if(!same)
+						tempreg(bin.var2,2);
 					Unary("idiv",bin.var2.tempreg);
 					if (bin.op.equals("/"))
 						mov(l.tempreg,"rax");

@@ -148,6 +148,8 @@ public class Liveliness {
 					if (isTemp(t)){
 						ins.use.add((Temp) t);
 					}
+					if (ins.retval!=null && isTemp(ins.retval))
+						ins.def.add((Temp) ins.retval);
 				}
 				if (ins.next!=null) {
 					ins.succ.add(ins.next);
@@ -261,7 +263,7 @@ public class Liveliness {
 		for (int i=0;i<tempset.size();++i) {
 			Temp t=tempset.get(i);
 			if (t.colornum==-1)
-			color_full(t);
+			color(t);
 		}
 		for (int i=0;i<tempset.size();++i) {
 			Temp t=tempset.get(i);
