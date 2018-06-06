@@ -231,14 +231,15 @@ public class Liveliness {
 			Quad inst=quadlist.get(i);
 			if (!isAssign(inst)) {
 				for (Temp a:inst.def){
-					a.intsect.addAll(inst.out);
+					for (Temp b:inst.out) {
+						a.intsect.add(b);b.intsect.add(a);}
 				}
 			}
 			else {
 				AssignQuad ins=(AssignQuad) inst;
 				for (Temp a:inst.def) {
 					for (Temp b:inst.out)
-						if (ins.rhs!=b) a.intsect.add(b);
+						if (ins.rhs!=b) {a.intsect.add(b);b.intsect.add(a);}
 				}
 			}
 		}
