@@ -456,9 +456,9 @@ public class Mainprocesser {
         topvars=top.seq;
         LinearIRconverter ir=new LinearIRconverter(topfuncs,topvars,classtype);
         ir.Visit(ast);
-        Liveliness lv=new Liveliness(ir.quadlist,ir.tempset);
-        lv.liveliness();
-       Nasmmaker maker=new Nasmmaker(ir.quadlist,ir.global,ir.contoplist,ir.restoplist,ir.lab2fun);
+        Liveliness lv=new Liveliness(ir.quadlist,ir.tempset,ir.lab2fun);
+         lv.liveliness();
+        Nasmmaker maker=new Nasmmaker(ir.quadlist,ir.global,ir.contoplist,ir.restoplist,ir.lab2fun);
         maker.make();
         System.out.print(Loadlib());
         while (maker.nasmlist.size()>0) {

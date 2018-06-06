@@ -2,27 +2,35 @@ package visitor;
 
 import java.util.*;
 import IR.*;
+import type.Function;
 public class Liveliness {
 	public List<Quad> quadlist;
 	public Stack<Var> param=new Stack<>(); 
+	public Map<Label,Function> lab2fun;
 	public List<Temp> tempset;
 	//final int colornum=11;
 	final int colornum=7;
 	//public int regint[]= {1,4,5,8,9,10,11,12,13,14,15};
 	public int regint[]= {1,10,11,12,13,14,15};
-	public Liveliness(List<Quad> quadlist, List<Temp> tempset) {
+	public Liveliness(List<Quad> quadlist, List<Temp> tempset ,Map<Label,Function> lab2fun) {
 		super();
 		this.quadlist = quadlist;
 		this.tempset = tempset;
+		this.lab2fun = lab2fun;
 	}
 	public void color(Temp t) {
 		boolean b[];
 		b=new boolean[colornum];
 		for (int i=0;i<colornum;++i) b[i]=false;
+		int k=0;
 		for (Temp i:t.intsect) {
 			if (i.colornum!=-1) {
-				b[i.colornum]=true;
+				if (!b[i.colornum]) {
+					++k;
+					b[i.colornum]=true;
+				}
 			}
+			if (k==colornum) break;
 		}
 		for (int i=0;i<colornum;++i) {
 			if (!b[i]) {
@@ -35,10 +43,15 @@ public class Liveliness {
 		boolean b[];
 		b=new boolean[colornum];
 		for (int i=0;i<colornum;++i) b[i]=false;
+		int k=0;
 		for (Temp i:tempset) {
 			if (i.colornum!=-1) {
-				b[i.colornum]=true;
+				if (!b[i.colornum]) {
+					++k;
+					b[i.colornum]=true;
+				}
 			}
+			if (k==colornum) break;
 		}
 		for (int i=0;i<colornum;++i) {
 			if (!b[i]) {
@@ -99,9 +112,9 @@ public class Liveliness {
 				AssignQuad ins=(AssignQuad) inst;
 				if(isTemp(ins.lhs)) ins.def.add((Temp) ins.lhs);
 				if(isTemp(ins.rhs)) ins.use.add((Temp) ins.rhs);
-				if (ins.prev!=null) {
-					ins.succ.add(ins.prev);
-					ins.prev.pred.add(ins);
+				if (ins.next!=null) {
+					ins.succ.add(ins.next);
+					ins.next.pred.add(ins);
 				}
 			}
 			else if (isBinary(inst)) {
@@ -109,9 +122,9 @@ public class Liveliness {
 				if(isTemp(ins.vardest)) ins.def.add((Temp) ins.vardest);
 				if(isTemp(ins.var1)) ins.use.add((Temp) ins.var1);
 				if(isTemp(ins.var2)) ins.use.add((Temp) ins.var2);
-				if (ins.prev!=null) {
-					ins.succ.add(ins.prev);
-					ins.prev.succ.add(ins);
+				if (ins.next!=null) {
+					ins.succ.add(ins.next);
+					ins.next.pred.add(ins);
 				}
 			}
 			else if (isCall(inst)) {
@@ -122,41 +135,44 @@ public class Liveliness {
 						ins.use.add((Temp) t);
 					}
 				}
-				if (ins.prev!=null) {
-					ins.succ.add(ins.prev);
-					ins.prev.succ.add(ins);
+				if (ins.next!=null) {
+					ins.succ.add(ins.next);
+					ins.next.pred.add(ins);
 				}
 			}
 			else if(isCJump(inst)) {
 				CJumpQuad ins=(CJumpQuad) inst;
 				if (isTemp(ins.par))
 					ins.use.add((Temp) ins.par);
-				if (ins.prev!=null) {
-					ins.succ.add(ins.prev);
-					ins.prev.succ.add(ins);
+				if (ins.next!=null) {
+					ins.succ.add(ins.next);
+					ins.next.pred.add(ins);
 				}
 				if (ins.Truelab!=null) {
 					ins.succ.add(ins.Truelab);
-					ins.Truelab.succ.add(ins);
+					ins.Truelab.pred.add(ins);
 				}
 				if (ins.Falselab!=null) {
 					ins.succ.add(ins.Falselab);
-					ins.Falselab.succ.add(ins);
+					ins.Falselab.pred.add(ins);
 				}
 			}
 			else if(isJump(inst)) {
 				JumpQuad ins=(JumpQuad) inst;
 				ins.succ.add(ins.label);
-				ins.label.succ.add(ins);
+				ins.label.pred.add(ins);
 			}
 			else if(isLabel(inst)) {
 				Label ins=(Label) inst;
 				if (inst.functionhead) {
-					
+					Function fun=lab2fun.get(ins);
+					for (int k=0;k<fun.temps.size();++k) {
+						ins.def.add(fun.temps.get(k));
+					}
 				}
-				if (ins.prev!=null) {
-					ins.succ.add(ins.prev);
-					ins.prev.succ.add(ins);
+				if (ins.next!=null) {
+					ins.succ.add(ins.next);
+					ins.next.pred.add(ins);
 				}
 			}
 			else if(isMalloc(inst)) {
@@ -165,17 +181,17 @@ public class Liveliness {
 					inst.def.add((Temp) ins.dest);
 				if (isTemp(ins.size))
 					inst.use.add((Temp) ins.size);
-				if (ins.prev!=null) {
-					ins.succ.add(ins.prev);
-					ins.prev.succ.add(ins);
+				if (ins.next!=null) {
+					ins.succ.add(ins.next);
+					ins.next.pred.add(ins);
 				}
 			}
 			else if(isParam(inst)) {
 				Param ins=(Param) inst;
 				param.add(ins.param);
-				if (inst.prev!=null) {
-					inst.succ.add(inst.prev);
-					inst.prev.succ.add(inst);
+				if (inst.next!=null) {
+					inst.succ.add(inst.next);
+					inst.next.pred.add(inst);
 				}
 			}
 			else if(isReturn(inst)) {
@@ -188,9 +204,9 @@ public class Liveliness {
 				UniQuad ins=(UniQuad) inst;
 				if(isTemp(ins.dest)) ins.def.add((Temp) ins.dest);
 				if(isTemp(ins.src)) ins.use.add((Temp) ins.src);
-				if (ins.prev!=null) {
-					ins.succ.add(ins.prev);
-					ins.prev.succ.add(ins);
+				if (ins.next!=null) {
+					ins.succ.add(ins.next);
+					ins.next.pred.add(ins);
 				}
 			}
 		}
@@ -230,7 +246,7 @@ public class Liveliness {
 		for (int i=0;i<tempset.size();++i) {
 			Temp t=tempset.get(i);
 			if (t.colornum==-1)
-			color_full(t);
+			color(t);
 		}
 		for (int i=0;i<tempset.size();++i) {
 			Temp t=tempset.get(i);
