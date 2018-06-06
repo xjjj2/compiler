@@ -247,7 +247,7 @@ public class Liveliness {
 		for (int i=0;i<tempset.size();++i) {
 			Temp t=tempset.get(i);
 			if (t.colornum==-1)
-			color(t);
+			color_full(t);
 		}
 		for (int i=0;i<tempset.size();++i) {
 			Temp t=tempset.get(i);

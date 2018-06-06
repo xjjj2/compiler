@@ -269,12 +269,12 @@ public class Nasmmaker {
 	}
 	public String getmem(Mem i) throws SemeticError {
 		String ans="qword[";
-		mov("rcx",getname(i.pos));
-		ans+="rcx";
+		tempreg(i.pos,3);
+		ans+=i.pos.tempreg;
 		if (i.varoff!=null) {
 			ans+="+";
-			mov("rbx",getname(i.varoff));
-			ans+="rbx";
+			tempreg(i.varoff,2);
+			ans+=i.varoff.tempreg;
 			ans+="*"+String.valueOf(i.scale);
 		}
 		if (i.offset!=null) {
