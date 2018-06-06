@@ -148,9 +148,9 @@ public class Liveliness {
 					if (isTemp(t)){
 						ins.use.add((Temp) t);
 					}
-					if (ins.retval!=null && isTemp(ins.retval))
-						ins.def.add((Temp) ins.retval);
 				}
+				if (ins.retval!=null && isTemp(ins.retval))
+					ins.def.add((Temp) ins.retval);
 				if (ins.next!=null) {
 					ins.succ.add(ins.next);
 					ins.next.pred.add(ins);
