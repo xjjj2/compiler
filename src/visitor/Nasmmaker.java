@@ -465,6 +465,7 @@ public class Nasmmaker {
 				nasmlist.add(((Label)inst).label+":");
 				if (inst.functionhead) {
 					init();
+					calleesave=new Stack<>();
 					Function nowfunc=lab2fun.get((Label)inst);
 					Unary("push","rbp");
 					mov("rbp","rsp");
@@ -543,6 +544,8 @@ public class Nasmmaker {
 			else if(isMalloc(inst)) {
 				Unary("push","rdi");callersave.push("rdi");
 				Unary("push","rsi");callersave.push("rsi");
+				Unary("push","rdx");callersave.push("rdx");
+				Unary("push","rcx");callersave.push("rcx");
 				Unary("push","r8");callersave.push("r8");
 				Unary("push","r9");callersave.push("r9");
 				Unary("push","r10");callersave.push("r10");
@@ -558,8 +561,8 @@ public class Nasmmaker {
 				Return ret=(Return)inst;
 				if (ret.ret!=null)
 					mov("rax",getname(ret.ret));
-				while (calleesave.size()>0) {
-					Unary("pop",calleesave.pop());
+				for (int j=calleesave.size()-1;j>=0;--j) {
+					Unary("pop",calleesave.get(j));
 				}
 				nasmlist.add("leave");
 				nasmlist.add("ret");
