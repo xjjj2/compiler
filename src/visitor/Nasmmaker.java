@@ -466,8 +466,15 @@ public class Nasmmaker {
 					Unary("neg",uni.dest.tempreg);
 				}
 				else if (uni.op.equals("!")) {
-					mov(uni.dest.tempreg,"1");
-					Binary("sub",uni.dest.tempreg,getname(uni.src));
+					if (uni.dest.tempreg.equals(getname(uni.src))) {
+						mov("rcx",getname(uni.src));
+						mov(uni.dest.tempreg,"1");
+						Binary("sub",uni.dest.tempreg,"rcx");
+					}
+					else {
+						mov(uni.dest.tempreg,"1");
+						Binary("sub",uni.dest.tempreg,getname(uni.src));
+					}
 				}
 				saveregs();
 			}
