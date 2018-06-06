@@ -360,7 +360,12 @@ public class Nasmmaker {
 				Vari l=bin.vardest;
 				tempreg(l,0);
 				String var2;
-				var2=getname(bin.var2);
+				if (getname(bin.var2).equals(l.tempreg)) {
+					mov("rcx",getname(bin.var2));
+					var2="rcx";
+				}
+				else 
+					var2=getname(bin.var2);
 				if (bin.var1!=bin.vardest) {
 					mov(l.tempreg,getname(bin.var1));
 				}
