@@ -10,6 +10,7 @@ public class Temp extends Vari {
 		this.offset = offset;
 		intsect=new HashSet<>();
 	}
+	public int nebs=0;
 	public Set<Temp> intsect;
 	public Imm offset; //frombp
 }
