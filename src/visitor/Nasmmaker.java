@@ -359,16 +359,12 @@ public class Nasmmaker {
 				BinaryQuad bin=(BinaryQuad)inst;
 				Vari l=bin.vardest;
 				tempreg(l,0);
-				if (getname(bin.var2).equals(getname(bin.vardest))) {
-					Var var=bin.var1;
-					bin.var1=bin.var2;
-					bin.var2=var;
-				}
+				String var2;
+				var2=getname(bin.var2);
 				if (bin.var1!=bin.vardest) {
 					mov(l.tempreg,getname(bin.var1));
 				}
-				String var2;
-				var2=getname(bin.var2);
+				
 				if (bin.op.equals("/")||bin.op.equals("%")) {
 					if (!l.tempreg.equals("rax"))
 						mov("rax",l.tempreg);

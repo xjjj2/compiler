@@ -112,6 +112,16 @@ public class Liveliness {
 				AssignQuad ins=(AssignQuad) inst;
 				if(isTemp(ins.lhs)) ins.def.add((Temp) ins.lhs);
 				if(isTemp(ins.rhs)) ins.use.add((Temp) ins.rhs);
+				if(isMem(ins.lhs)) {
+					Mem m=(Mem) ins.lhs;
+					if (m.pos!=null&&isTemp(m.pos)) ins.use.add((Temp)m.pos);
+					if (m.varoff!=null&&isTemp(m.varoff)) ins.use.add((Temp)m.varoff);
+				}
+				if(isMem(ins.rhs)) {
+					Mem m=(Mem) ins.rhs;
+					if (m.pos!=null&&isTemp(m.pos)) ins.use.add((Temp)m.pos);
+					if (m.varoff!=null&&isTemp(m.varoff)) ins.use.add((Temp)m.varoff);
+				}
 				if (ins.next!=null) {
 					ins.succ.add(ins.next);
 					ins.next.pred.add(ins);
@@ -122,6 +132,10 @@ public class Liveliness {
 				if(isTemp(ins.vardest)) ins.def.add((Temp) ins.vardest);
 				if(isTemp(ins.var1)) ins.use.add((Temp) ins.var1);
 				if(isTemp(ins.var2)) ins.use.add((Temp) ins.var2);
+				if (isTemp(ins.vardest)&&isTemp(ins.var2)) {
+					((Temp) ins.vardest).intsect.add((Temp) ins.var2);
+					((Temp) ins.var2).intsect.add((Temp) ins.vardest);
+				}
 				if (ins.next!=null) {
 					ins.succ.add(ins.next);
 					ins.next.pred.add(ins);
@@ -247,7 +261,7 @@ public class Liveliness {
 		for (int i=0;i<tempset.size();++i) {
 			Temp t=tempset.get(i);
 			if (t.colornum==-1)
-			color_full(t);
+			color(t);
 		}
 		for (int i=0;i<tempset.size();++i) {
 			Temp t=tempset.get(i);
