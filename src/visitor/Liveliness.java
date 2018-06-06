@@ -6,8 +6,10 @@ public class Liveliness {
 	public List<Quad> quadlist;
 	public Stack<Var> param=new Stack<>(); 
 	public List<Temp> tempset;
-	final int colornum=11;
-	public int regint[]= {1,4,5,8,9,10,11,12,13,14,15};
+	//final int colornum=11;
+	final int colornum=7;
+	//public int regint[]= {1,4,5,8,9,10,11,12,13,14,15};
+	public int regint[]= {1,10,11,12,13,14,15};
 	public Liveliness(List<Quad> quadlist, List<Temp> tempset) {
 		super();
 		this.quadlist = quadlist;
@@ -227,6 +229,7 @@ public class Liveliness {
 //		Collections.shuffle(tempset);
 		for (int i=0;i<tempset.size();++i) {
 			Temp t=tempset.get(i);
+			if (t.colornum==-1)
 			color_full(t);
 		}
 		for (int i=0;i<tempset.size();++i) {

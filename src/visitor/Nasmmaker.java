@@ -260,7 +260,7 @@ public class Nasmmaker {
 		}
 		Vari tp=(Vari) t;
 		if (tp.colornum!=-1) t.tempreg=getname(t);
-		else {
+		else if (t.tempreg==null){
 			mov(regname[k],getname(t));
 			t.tempreg=regname[k];
 			regvar[k]=t;
@@ -471,6 +471,13 @@ public class Nasmmaker {
 					mov("rbp","rsp");
 					Binary("sub","rsp",String.valueOf(nowfunc.templong));
 					List<Temp> temp=lab2fun.get((Label)inst).temps;
+					Label ins=(Label) inst;
+					for (int j=0;j<16;++j) {
+						if (ins.usedreg[j]) {
+							calleesave.push(regname[j]);
+							Unary("push",regname[j]);
+						}
+					}
 					for (int j=0;j<temp.size();++j) {
 						if (j==0) mov(getname(temp.get(j)),"rdi");//{setvar(temp.get(j), 5);usageque.add(5);}
 						if (j==1) mov(getname(temp.get(j)),"rsi");//{setvar(temp.get(j), 4);usageque.add(4);}
@@ -478,13 +485,7 @@ public class Nasmmaker {
 						if (j==3) mov(getname(temp.get(j)),"rcx");//{mov(getname(temp.get(j)),"rcx");}
 						if (j==4) mov(getname(temp.get(j)),"r8");//{setvar(temp.get(j), 8);usageque.add(8);}
 						if (j==5) mov(getname(temp.get(j)),"r9");//{setvar(temp.get(j), 9);usageque.add(9);}
-					}
-					Label ins=(Label) inst;
-					for (int j=0;j<16;++j) {
-						if (ins.usedreg[j]) {
-							calleesave.push(regname[j]);
-							Unary("push",regname[j]);
-						}
+						if (j>=6) mov(getname(temp.get(j)),getmem(temp.get(j)));
 					}
 /*					if (j<1) {
 						calleesave.push("rdi");
