@@ -268,7 +268,7 @@ public class Nasmmaker {
 	}
 	public String getmem(Mem i) throws SemeticError {
 		String ans="qword[";
-		tempreg(i.pos,0);
+		tempreg(i.pos,3);
 		ans+=i.pos.tempreg;
 		if (i.varoff!=null) {
 			ans+="+";
