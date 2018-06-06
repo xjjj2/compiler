@@ -259,7 +259,7 @@ public class Liveliness {
 				}
 			}
 		}
-//		Collections.shuffle(tempset);
+		Collections.shuffle(tempset);
 		for (int i=0;i<tempset.size();++i) {
 			Temp t=tempset.get(i);
 			if (t.colornum==-1)
