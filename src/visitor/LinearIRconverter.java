@@ -65,7 +65,8 @@ import type.*;
 
 public class LinearIRconverter extends ASTBaseVisitor<Var> {
 	public List<Quad> quadlist;
-	public List<Temp> tempset;
+	public Set<Temp> tempset;
+	public List<Temp> tempset2;
 	public List<Conststring> contoplist;
 	public List<Resarea> restoplist;
 	public List<String> global;
@@ -82,7 +83,8 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		quadlist=new ArrayList<>();
 		contoplist=new ArrayList<>();
 		restoplist=new ArrayList<>();
-		tempset=new ArrayList<>();
+		tempset=new HashSet<>();
+		tempset2=new ArrayList<>();
 		global=new ArrayList<>();
 		Labels=new HashMap<>();
 		lab2fun=new HashMap<>();
@@ -197,6 +199,7 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 		++tempnum;
 		Temp temp=new Temp("_t"+String.valueOf(tempnum),getimm(-(functempnum)*8));
 		tempset.add(temp);
+		tempset2.add(temp);
 		nowLabel.usedtemp.add(temp);
 		return temp;
 		

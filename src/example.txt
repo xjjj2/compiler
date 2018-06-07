@@ -1,127 +1,36 @@
-int n;
-int h;
-int now;
-int[] a;
-int A = 48271;
-int M = 2147483647;
-int Q;
-int R;
-int seed=1;
-int random() {
-    int tempseed = A * (seed % Q) - R * (seed / Q);
-    if (tempseed >= 0)
-		seed = tempseed;
-    else
-		seed = tempseed + M;
-	return seed;
-}
-void initialize(int val) {
-    seed = val;
-}
-void swap(int x,int y) {
-    int temp = a[x];
-    a[x] = a[y];
-    a[y] = temp;
-}
-bool pd(int x) {
-    for (;h <= x; ++h)
-        if (x == h * (h + 1) / 2)
-			return true;
-    return false;
-}
-void show() {
-    int i;
-    for (i = 0; i < now; ++i)
-        print(toString(a[i]) + " ");
-    println("");
-}
-bool win()
-{
-    int i;
-	int j;
-	int[] b = new int[101];
-	int temp;
-    if (now != h)
-		return false;
-    for (j = 0; j < now; ++j)
-        b[j] = a[j];
-    for (i = 0;i < now - 1; ++i)
-        for (j = i + 1;j < now; ++j)
-            if (b[i] > b[j]) {
-                temp = b[i];
-                b[i] = b[j];
-                b[j] = temp;
-            }
-    for (i = 0; i < now; ++i)
-        if (b[i] != i + 1)
-			return false;
-    return true;
-}
-void merge()
-{
-    int i;
-    for (i = 0;i < now; ++i)
-        if (a[i] == 0) {
-            int j;
-            for (j = i+1; j < now; ++j)
-                if (a[j] != 0) {
-                    swap(i,j);
-                    break;
-                }
-        }
-    for (i=0;i<now;++i)
-        if (a[i] == 0) {
-            now = i;
-            break;
-        }
-}
-void move() {
-    int i = 0;
-    for (; i < now; ) {
-        --a[i];
-        i = i + 1;
-    }
-    a[now] = now;
-    now++;
-}
+
+int N;
+int h = 99;
+int i = 100;
+int j = 101;
+int k = 102;
+int total = 0;
+
 int main() {
-	int T = 0;
-        int times = getInt();
-	for (; T < times; ++T) {
-		int i = 0;
-		int temp = 0;
-		int count = 0;
-		n = 5050;
-		h = 0;
-		a = new int[101];
-		Q = M / A;
-		R = M % A;
-		if (!pd(n)) {
-			println("Sorry, the number n must be a number s.t. there exists i satisfying n=1+2+...+i");
-			return 1;
-		}
-		println("Let's start!");
-		initialize(random());
-		now = random() % 10 + 1;
-		println(toString(now));
-		for (; i < now - 1; ++i)
+  	int a;
+    int b;
+	int c;
+	int d;
+	int e;
+	int f;
+	N=getInt();
+	for ( a=1; a<=N; a++ )
+	for ( b=1; b<=N; b++ )
+	for ( c=1; c<=N; c++ )	
+	for ( d=1; d<=N; d++ )
+	for ( e=1; e<=N; e++ )
+	for ( f=1; f<=N; f++ )
+		if (a!=b && a!=c && a!=d && a!=e && a!=f && a!=h && a!=i && a!=j && a!=k
+              && b!=c && b!=d && b!=e && b!=f && b!=h && b!=i && b!=j && b!=k
+              && c!=d && c!=e && c!=f && c!=h && c!=i && c!=j && c!=k
+              && d!=e && d!=f && d!=h && d!=i && d!=j && d!=k
+              && e!=f && e!=h && e!=i && e!=j && e!=k
+              && f!=h && f!=i && f!=j && f!=k && i!=j && h!=k)
 		{
-			a[i] = random() % 10 + 1;
-			while (a[i] + temp > n)
-				a[i] = random() % 10 + 1;
-			temp = temp + a[i];
+			total++;
 		}
-		a[now - 1] = n - temp;
-		show();
-		merge();
-		while (!win()) {
-			// println("step " + toString(++count) + ":");
-			++count;
-			move();
-			merge();
-			// show();
-		}
-		println("Total: " + toString(count) + " step(s)");
-	}
-    return 0;
+	
+	println(toString(total));
+	return 0;
 }
+
