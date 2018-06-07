@@ -270,7 +270,7 @@ public class Liveliness {
 		}
 		h=true;
 		Stack<Temp> modfy=new Stack<>();
-		while (h) {
+		while (tempset.size()>0) {
 			h=false;
 			for (Temp t:tempset) {
 				if (t.nebs<colornum) {
@@ -284,6 +284,18 @@ public class Liveliness {
 			}
 			while (modfy.size()>0) 
 				tempset.remove(modfy.pop());
+			if (!h) {
+				for (Temp t:tempset) {
+					for (Temp x:t.intsect) {
+						--x.nebs;
+					}
+					modfy.push(t);
+					tempseq.push(t);
+					break;
+				}
+				while (modfy.size()>0) 
+					tempset.remove(modfy.pop());
+			}
 		}
 		for (Temp t:tempset) {
 			if (t.colornum==-1)
