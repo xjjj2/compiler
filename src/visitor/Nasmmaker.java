@@ -531,11 +531,11 @@ public class Nasmmaker {
 			else if(isCall(inst)) {
 				Call cl=(Call)inst;
 				
-				if(cl.num>0) {Unary("push","rdi");callersave.push("rdi");}
+/*				if(cl.num>0) {Unary("push","rdi");callersave.push("rdi");}
 				if(cl.num>1) {Unary("push","rsi");callersave.push("rsi");}
 				if(cl.num>4) {Unary("push","r8");callersave.push("r8");}
-				if(cl.num>5) {Unary("push","r9");callersave.push("r9");}
-	/*			Unary("push","rdi");callersave.push("rdi");
+				if(cl.num>5) {Unary("push","r9");callersave.push("r9");}*/
+/*				Unary("push","rdi");callersave.push("rdi");
 				Unary("push","rsi");callersave.push("rsi");
 				Unary("push","r8");callersave.push("r8");
 				Unary("push","r9");callersave.push("r9");*/
@@ -566,8 +566,8 @@ public class Nasmmaker {
 				saveregs();
 			}
 			else if(isMalloc(inst)) {
-				Unary("push","rdi");callersave.push("rdi");
-/*				Unary("push","rsi");callersave.push("rsi");
+/*				Unary("push","rdi");callersave.push("rdi");
+				Unary("push","rsi");callersave.push("rsi");
 				Unary("push","r8");callersave.push("r8");
 				Unary("push","r9");callersave.push("r9");*/
 				Unary("push","r10");callersave.push("r10");
