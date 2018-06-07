@@ -10,6 +10,7 @@ public class Liveliness {
 	public Set<Temp> tempset;
 	public Set<Temp> attr;
 	public List<Temp> tempset2;
+	public int sum=0;
 	public Stack<Temp> tempseq;
 	final int colornum=11;
 //	final int colornum=7;
@@ -46,9 +47,10 @@ public class Liveliness {
 		for (int i=0;i<colornum;++i) {
 			if (!b[i]) {
 				t.colornum=i;
-				break;
+				return;
 			} 
 		}
+		++sum;
 	}
 	public void color_full(Temp t) {
 		boolean b[];
