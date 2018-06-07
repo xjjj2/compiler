@@ -136,10 +136,10 @@ public class Liveliness {
 				if(isTemp(ins.vardest)) ins.def.add((Temp) ins.vardest);
 				if(isTemp(ins.var1)) ins.use.add((Temp) ins.var1);
 				if(isTemp(ins.var2)) ins.use.add((Temp) ins.var2);
-				if (isTemp(ins.vardest)&&isTemp(ins.var2)) {
+/*				if (isTemp(ins.vardest)&&isTemp(ins.var2)) {
 					((Temp) ins.vardest).intsect.add((Temp) ins.var2);
 					((Temp) ins.var2).intsect.add((Temp) ins.vardest);
-				}
+				}*/
 				if (ins.next!=null) {
 					ins.succ.add(ins.next);
 					ins.next.pred.add(ins);

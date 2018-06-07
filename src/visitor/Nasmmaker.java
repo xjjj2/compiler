@@ -250,10 +250,11 @@ public class Nasmmaker {
 		if (!a.equals(b))
 			nasmlist.add("mov\t"+a+" , "+b);
 	}
-	public String tempreg(Var t,int k) throws SemeticError {
+	public String tempreg(Var t,int k,boolean s) throws SemeticError {
 		if (k!=0 && k!=2 && k!=3) throw new SemeticError();
 		if (isMem(t)||isImm(t)) {
-			mov(regname[k],getname(t));
+			if (s)
+				mov(regname[k],getname(t));
 			t.tempreg=regname[k];
 			regvar[k]=t;
 			return t.tempreg;
@@ -269,11 +270,11 @@ public class Nasmmaker {
 	}
 	public String getmem(Mem i) throws SemeticError {
 		String ans="qword[";
-		tempreg(i.pos,3);
+		tempreg(i.pos,3,true);
 		ans+=i.pos.tempreg;
 		if (i.varoff!=null) {
 			ans+="+";
-			tempreg(i.varoff,2);
+			tempreg(i.varoff,2,true);
 			ans+=i.varoff.tempreg;
 			ans+="*"+String.valueOf(i.scale);
 		}
@@ -336,7 +337,7 @@ public class Nasmmaker {
 					if(isImm(ass.rhs)) mov(getmem((Mem)ass.lhs),getimm((Imm)ass.rhs));
 					else {
 						Vari a=(Vari)ass.rhs;
-						tempreg(a,0);
+						tempreg(a,0,true);
 						mov(getmem((Mem)ass.lhs),a.tempreg);
 					}
 				}
@@ -344,13 +345,13 @@ public class Nasmmaker {
 					if(isImm(ass.rhs)) mov(getmem((Resarea)ass.lhs),getimm((Imm)ass.rhs));
 					else {
 						Vari a=(Vari)ass.rhs;
-						tempreg(a,0);
+						tempreg(a,0,true);
 						mov(getmem((Resarea)ass.lhs),a.tempreg);
 					}
 				}
 				else{
 					Vari l=(Vari)ass.lhs;
-					tempreg(l, 0);
+					tempreg(l, 0,false);
 					mov(l.tempreg,getname(ass.rhs));
 				}
 				saveregs();
@@ -358,7 +359,7 @@ public class Nasmmaker {
 			else if (isBinary(inst)) {
 				BinaryQuad bin=(BinaryQuad)inst;
 				Vari l=bin.vardest;
-				tempreg(l,0);
+				tempreg(l,0,false);
 				String var2;
 				boolean same=false;
 				if (getname(bin.var2).equals(l.tempreg)) {
@@ -378,7 +379,7 @@ public class Nasmmaker {
 						mov("rax",l.tempreg);
 					nasmlist.add("cqo");
 					if(!same)
-						tempreg(bin.var2,2);
+						tempreg(bin.var2,2,true);
 					Unary("idiv",bin.var2.tempreg);
 					if (bin.op.equals("/"))
 						mov(l.tempreg,"rax");
@@ -443,7 +444,7 @@ public class Nasmmaker {
 			else if (isCJump(inst)) {
 				CJumpQuad cj=(CJumpQuad)inst;
 				if (isImm(cj.par)) 
-				Binary("cmp",tempreg(cj.par,0),"0");
+				Binary("cmp",tempreg(cj.par,0,true),"0");
 				else Binary("cmp",getname(cj.par),"0");
 				saveregs();
 				if (cj.Truelab!=null)
@@ -456,7 +457,7 @@ public class Nasmmaker {
 			}
 			else if (isUniary(inst)) {
 				UniQuad uni=(UniQuad)(inst);
-				tempreg(uni.dest,0);
+				tempreg(uni.dest,0,false);
 				if (uni.op.equals("~")) {
 					mov(uni.dest.tempreg,getname(uni.src));
 					Unary("not",uni.dest.tempreg);
@@ -562,8 +563,6 @@ public class Nasmmaker {
 			else if(isMalloc(inst)) {
 				Unary("push","rdi");callersave.push("rdi");
 				Unary("push","rsi");callersave.push("rsi");
-				Unary("push","rdx");callersave.push("rdx");
-				Unary("push","rcx");callersave.push("rcx");
 				Unary("push","r8");callersave.push("r8");
 				Unary("push","r9");callersave.push("r9");
 				Unary("push","r10");callersave.push("r10");
