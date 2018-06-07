@@ -8,12 +8,13 @@ public class Liveliness {
 	public Stack<Var> param=new Stack<>(); 
 	public Map<Label,Function> lab2fun;
 	public Set<Temp> tempset;
+	public Set<Temp> attr;
 	public List<Temp> tempset2;
 	public Stack<Temp> tempseq;
-	//final int colornum=11;
-	final int colornum=7;
-	//public int regint[]= {1,4,5,8,9,10,11,12,13,14,15};
-	public int regint[]= {1,10,11,12,13,14,15};
+	final int colornum=11;
+//	final int colornum=7;
+	public int regint[]= {1,4,5,8,9,10,11,12,13,14,15};
+//	public int regint[]= {1,10,11,12,13,14,15};
 	public Liveliness(List<Quad> quadlist, Set<Temp> tempset,List<Temp> tempset2,Map<Label,Function> lab2fun) {
 		super();
 		this.quadlist = quadlist;
@@ -21,6 +22,12 @@ public class Liveliness {
 		this.lab2fun = lab2fun;
 		tempseq=new Stack<>();
 		this.tempset2=tempset2;
+		attr=new HashSet<>();
+		for (int i=1;i<5;++i) {
+			Temp t=new Temp();
+			t.colornum=i;
+			attr.add(t);
+		}
 	}
 	public void color(Temp t) {
 		boolean b[];
@@ -151,6 +158,7 @@ public class Liveliness {
 					Var t=param.pop();
 					if (isTemp(t)){
 						ins.use.add((Temp) t);
+						((Temp)t).intsect.addAll(attr);
 					}
 				}
 				if (ins.retval!=null && isTemp(ins.retval))
@@ -188,6 +196,7 @@ public class Liveliness {
 					Function fun=lab2fun.get(ins);
 					for (int k=0;k<fun.temps.size();++k) {
 						ins.def.add(fun.temps.get(k));
+						fun.temps.get(k).intsect.addAll(attr);
 					}
 				}
 				if (ins.next!=null) {

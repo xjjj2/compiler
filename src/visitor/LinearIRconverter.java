@@ -67,7 +67,6 @@ public class LinearIRconverter extends ASTBaseVisitor<Var> {
 	public List<Quad> quadlist;
 	public Set<Temp> tempset;
 	public List<Temp> tempset2;
-	public Set<Temp> attr;
 	public List<Conststring> contoplist;
 	public List<Resarea> restoplist;
 	public List<String> global;
