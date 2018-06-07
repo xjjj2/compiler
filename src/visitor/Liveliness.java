@@ -7,20 +7,16 @@ public class Liveliness {
 	public List<Quad> quadlist;
 	public Stack<Var> param=new Stack<>(); 
 	public Map<Label,Function> lab2fun;
-	public Set<Temp> tempset;
-	public List<Temp> tempset2;
-	public Stack<Temp> tempseq;
+	public List<Temp> tempset;
 	//final int colornum=11;
 	final int colornum=7;
 	//public int regint[]= {1,4,5,8,9,10,11,12,13,14,15};
 	public int regint[]= {1,10,11,12,13,14,15};
-	public Liveliness(List<Quad> quadlist, Set<Temp> tempset,List<Temp> tempset2,Map<Label,Function> lab2fun) {
+	public Liveliness(List<Quad> quadlist, List<Temp> tempset ,Map<Label,Function> lab2fun) {
 		super();
 		this.quadlist = quadlist;
 		this.tempset = tempset;
 		this.lab2fun = lab2fun;
-		tempseq=new Stack<>();
-		this.tempset2=tempset2;
 	}
 	public void color(Temp t) {
 		boolean b[];
@@ -263,39 +259,14 @@ public class Liveliness {
 				}
 			}
 		}
-//		Collections.shuffle(tempset);
-		for (Temp t:tempset) {
-			t.intsect.remove(t);
-			t.nebs=t.intsect.size();
-		}
-		h=true;
-		Stack<Temp> modfy=new Stack<>();
-		while (h) {
-			h=false;
-			for (Temp t:tempset) {
-				if (t.nebs<colornum) {
-					for (Temp x:t.intsect) {
-						--x.nebs;
-					}
-					h=true;
-					modfy.push(t);
-					tempseq.push(t);
-				}
-			}
-			while (modfy.size()>0) 
-				tempset.remove(modfy.pop());
-		}
-		for (Temp t:tempset) {
+		Collections.shuffle(tempset);
+		for (int i=0;i<tempset.size();++i) {
+			Temp t=tempset.get(i);
 			if (t.colornum==-1)
-				color(t);
+			color(t);
 		}
-		while (tempseq.size()>0) {
-			Temp t=tempseq.pop();
-			if (t.colornum==-1)
-				color(t);
-		}
-		for (int i=0;i<tempset2.size();++i) {
-			Temp t=tempset2.get(i);
+		for (int i=0;i<tempset.size();++i) {
+			Temp t=tempset.get(i);
 			if (t.colornum!=-1)
 				t.colornum=regint[t.colornum];
 		}
